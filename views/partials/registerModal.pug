@@ -6,11 +6,6 @@ div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel
         button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Cerrar")
       .modal-body.px-5.pb-0
         div#registroContainer
-          if errores
-            .alert.alert-danger(role="alert")
-              ul
-                each error in errores
-                  li= error.mensaje
           form#formRegistro
             h3 Datos de la cuenta
             .row
@@ -96,49 +91,3 @@ div#mensajeConfirmacionModal.modal.fade(tabindex="-1" aria-labelledby="mensajeCo
         p Hemos enviado un correo electrónico con un enlace para activar tu cuenta. Por favor, revisa tu bandeja de entrada.
       .modal-footer
         button.btn.btn-warning(type="button" data-bs-dismiss="modal") Cerrar
-
-//- SCRIPT para manejar el checkbox y el envío del formulario
-script.
-  document.addEventListener('DOMContentLoaded', function() {
-      var condicionesCheckbox = document.getElementById('condiciones');
-      var propietarioFields = document.getElementById('propietarioFields');
-
-      condicionesCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-          propietarioFields.removeAttribute('disabled');
-        } else {
-          propietarioFields.setAttribute('disabled', '');
-        }
-      });
-
-      const formRegistro = document.getElementById('formRegistro');
-      const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
-      const mensajeConfirmacionModal = new bootstrap.Modal(document.getElementById('mensajeConfirmacionModal'));
-
-      formRegistro.addEventListener('submit', async function(event) {
-          event.preventDefault();
-
-          const formData = new FormData(formRegistro);
-          const data = Object.fromEntries(formData.entries());
-
-          try {
-              const response = await fetch('/registrarUsuario', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(data),
-              });
-
-              if (response.ok) {
-                  // Cerrar modal de registro y abrir el de confirmación
-                  registerModal.hide();
-                  mensajeConfirmacionModal.show();
-              } else {
-                  const errorData = await response.json();
-                  alert(errorData.error || "Ocurrió un error. Inténtalo nuevamente.");
-              }
-          } catch (error) {
-              console.error('Error en el registro:', error);
-              alert("Ocurrió un error inesperado.");
-          }
-      });
-  });

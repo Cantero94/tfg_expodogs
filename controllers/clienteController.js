@@ -26,84 +26,122 @@ const paginaInicio = async (req, res) => {
 };
 
 const registrarUsuario = async (req, res) => {
-    const errores = [];
-    const { nombre, apellidos, dni, email, password, telefono1, telefono2, direccion, cp, ciudad, provincia, pais } = req.body;
+    try {
+        const { nombre, apellidos, dni, email, password, telefono1, telefono2, direccion, cp, ciudad, provincia, pais } = req.body;
 
-    const usuarioExistente = await Usuario.findOne({ where: { email } });
-    if (usuarioExistente) {
-        errores.push({ mensaje: "El correo ya está registrado." });
-    }
-    if (errores.length > 0) {
-        return res.render("paginainicio", {
-            pagina: "Inicio",
-            errores,
-        });
-    } else {
-        try {
-            // Hashear la contraseña
-            const hashedPassword = await bcrypt.hash(password, 10);
+        // Expresión regular para teléfonos internacionales
+        const telefonoRegex = /^\+?\d{1,4}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{3,5}[-.\s]?\d{3,5}$/;
 
-            // Generar un token de verificación único
-            const tokenVerificacion = crypto.randomBytes(32).toString("hex");
-
-            // Crear usuario
-            await Usuario.create({
-                nombre,
-                apellidos,
-                dni,
-                email,
-                password: hashedPassword,
-                telefono1,
-                telefono2,
-                direccion,
-                cp,
-                ciudad,
-                provincia,
-                pais,
-                activo: false,
-                is_socio: false,
-                baneado: false,
-                token_verificacion: tokenVerificacion, 
-            });
-            // Crear transporte de correo (configura tus credenciales)
-            const transporter = nodemailer.createTransport({
-                service: "gmail", // Usando Gmail como servicio de correo
-                auth: {
-                user: "jc.canterito@gmail.com", // Reemplaza con tu correo de Gmail
-                pass: "nvcf imwa wwlp wkgd" // Reemplaza con tu contraseña o una contraseña de aplicación
-                },
-            });
-
-            // Configurar opciones del correo
-            const mailOptions = {
-                from: "jc.canterito@gmail.com@gmail.com",
-                to: email, // Se enviaría al correo del usuario registrado
-                subject: "Confirma tu cuenta en Expodogs",
-                html: `
-                <div style="font-family: Arial, sans-serif; width:50%; margin:0 auto;">
-                    <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
-                        <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
-                    </div>
-                    <h1 style="text-align: center;">Hola, ${nombre}</h1>
-                    <div style="padding: 0px 20px; text-align: center;">
-                        <p style="text-align: left;">Gracias por registrarte en Expodogs. Para activar tu cuenta, haz clic en el siguiente enlace:</p>
-                        <a href="http://localhost:4000/verificar-cuenta?token=${tokenVerificacion}" 
-                        style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-                        Activar mi cuenta
-                        </a>
-                    </div>
-                </div>
-                `,
-            };
-
-            await transporter.sendMail(mailOptions);
-
-            res.redirect("/");
-        } catch (error) {
-            console.error("❌ Error en registrarUsuario:", error);
-            errores.push({ mensaje: "Error en el servidor. Inténtalo de nuevo." });
-            return res.render("paginainicio", { errores });
+        if (!telefonoRegex.test(telefono1)) {
+            return res.status(400).json({ error: "❌ El número de Teléfono 1 no es válido." });
         }
+        if (telefono2 && !telefonoRegex.test(telefono2)) {
+            return res.status(400).json({ error: "❌ El número de Teléfono 2 no es válido." });
+        }
+
+        // Validar DNI/NIE/Pasaporte en el backend
+        if (!validarIdentificacion(dni)) {
+            return res.status(400).json({ error: "❌ El DNI/NIE/Pasaporte no es válido." });
+        }
+
+        // Verificar si el usuario ya existe
+        const usuarioExistente = await Usuario.findOne({ where: { email } });
+        if (usuarioExistente) {
+            console.log("❌ Error: El correo ya está registrado.");
+            return res.status(400).json({ error: "El correo ya está registrado." });
+        }
+
+        // Hashear la contraseña
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Generar un token de verificación único
+        const tokenVerificacion = crypto.randomBytes(32).toString("hex");
+
+        // Crear usuario en la base de datos
+        await Usuario.create({
+            nombre,
+            apellidos,
+            dni,
+            email,
+            password: hashedPassword,
+            telefono1,
+            telefono2,
+            direccion,
+            cp,
+            ciudad,
+            provincia,
+            pais,
+            activo: false,
+            baneado: false,
+            token_verificacion: tokenVerificacion, 
+        });
+
+        // Enviar correo de confirmación
+        await enviarCorreoConfirmacion(email, nombre, tokenVerificacion);
+
+        console.log("✅ Usuario registrado correctamente.");
+        res.status(200).json({ mensaje: "Registro exitoso. Revisa tu correo para activarlo." });
+
+    } catch (error) {
+        console.error("❌ Error en registrarUsuario:", error);
+        return res.status(500).json({ error: "Error en el servidor. Inténtalo nuevamente." }); // ✅ Ahora devuelve JSON en caso de error
+    }
+};
+
+const validarDNI = (dni) => {
+    const dniRegex = /^\d{8}[A-Z]$/;
+    const nieRegex = /^[XYZ]\d{7}[A-Z]$/;
+
+    if (!dniRegex.test(dni) && !nieRegex.test(dni)) return false;
+
+    let numero = dni.slice(0, -1).replace("X", "0").replace("Y", "1").replace("Z", "2");
+    let letra = dni.slice(-1);
+
+    const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+    return letrasValidas[numero % 23] === letra;
+};
+
+const validarIdentificacion = (identificacion) => {
+    const regexExtranjeros = /^[A-Z0-9]{6,20}$/i;
+
+    return validarDNI(identificacion) || regexExtranjeros.test(identificacion);
+};
+
+const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "jc.canterito@gmail.com",
+                pass: "nvcf imwa wwlp wkgd"
+            },
+        });
+
+        const mailOptions = {
+            from: "jc.canterito@gmail.com",
+            to: email,
+            subject: "Confirma tu cuenta en Expodogs",
+            html: `
+            <div style="font-family: Arial, sans-serif; width:50%; margin:0 auto;">
+                <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
+                    <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
+                </div>
+                <h1 style="text-align: center;">Hola, ${nombre}</h1>
+                <div style="padding: 0px 20px; text-align: center;">
+                    <p style="text-align: left;">Gracias por registrarte en Expodogs. Para activar tu cuenta, haz clic en el siguiente enlace:</p>
+                    <a href="http://localhost:4000/verificar-cuenta?token=${tokenVerificacion}" 
+                    style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                    Activar mi cuenta
+                    </a>
+                </div>
+            </div>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("✅ Correo de confirmación enviado a:", email);
+    } catch (error) {
+        console.error("❌ Error enviando el correo:", error);
     }
 };
 
@@ -173,7 +211,6 @@ const loginUsuario = async (req, res) => {
     }
 };
 
-
 const logoutUsuario = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -183,7 +220,6 @@ const logoutUsuario = (req, res) => {
         res.redirect("/");
     });
 };
-
 
 // Exportar funciones
 export {

@@ -1,0 +1,13 @@
+// 🔹 Modal Genérico para Errores
+div#errorModal.modal.fade(tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true")
+  .modal-dialog
+    .modal-content
+      .modal-header.bg-danger.text-white
+        h5#errorModalLabel.modal-title ❌ Error
+        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Cerrar")
+
+      .modal-body
+        ul#modalErrorList  // 🔹 Aquí se mostrarán los errores dinámicamente
+
+      .modal-footer
+        button.btn.btn-danger(type="button" data-bs-dismiss="modal") Cerrar
