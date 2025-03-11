@@ -16,10 +16,14 @@ const paginaInicio = async (req, res) => {
     try {
         const exposiciones = await Exposicion.findAll({ order: [["fecha", "DESC"]] });
 
+        const errores = req.session.errores || [];
+        req.session.errores = [];
+
         res.render("paginainicio", {
             pagina: "Inicio",
             exposiciones,
             usuario: req.session.usuario || null,
+            errores,
             moment
         });
     } catch (error) {
@@ -199,7 +203,14 @@ const verificarCuenta = async (req, res) => {
         const usuario = await Usuario.findOne({ where: { token_verificacion: token } });
 
         if (!usuario) {
-            return res.status(400).send("Token inválido o cuenta ya activada.");
+            req.session.errores = ["Enlace inválido o cuenta ya activada."];
+            console.log("✅ Error guardado en sesión:", req.session.errores);
+
+            // Guardar sesión antes de redirigir
+            req.session.save(() => {
+                return res.redirect("/");
+            });
+            return;
         }
 
         // Activar la cuenta y eliminar el token

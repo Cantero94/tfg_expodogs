@@ -1,12 +1,15 @@
 //Script para partials/errorModal.pug
 document.addEventListener("DOMContentLoaded", function () {
-    if (window.errores.length > 0) {
+    //console.log("💡 Errores recibidos:", window.errores); // Depuración
+
+    if (window.errores && window.errores.length > 0) {
         let modalErrorList = document.getElementById("modalErrorList");
-        modalErrorList.innerHTML = ""; // Limpia el contenido anterior
+        modalErrorList.innerHTML = ""; // Limpiar contenido anterior
 
         window.errores.forEach(error => {
             let li = document.createElement("li");
             li.textContent = error;
+            li.classList.add("list-group-item", "text-danger");
             modalErrorList.appendChild(li);
         });
 
