@@ -2,11 +2,14 @@ import { Exposicion } from "../models/Exposicion.js";
 import { Usuario } from "../models/Usuario.js";
 import { Perro } from "../models/Perro.js";
 import { Inscripcion } from "../models/Inscripcion.js";
+
 import bcrypt from "bcrypt";
 import moment from "moment";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import e from "express";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Página de inicio
 const paginaInicio = async (req, res) => {
@@ -27,28 +30,20 @@ const paginaInicio = async (req, res) => {
 
 const registrarUsuario = async (req, res) => {
     try {
-        const { nombre, apellidos, dni, email, password, telefono1, telefono2, direccion, cp, ciudad, provincia, pais } = req.body;
+        const { nombre, apellidos, dni, email, password, password2, telefono1, telefono2, direccion, cp, ciudad, provincia, pais } = req.body;
 
-        // Expresión regular para teléfonos internacionales
-        const telefonoRegex = /^\+?\d{1,4}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{3,5}[-.\s]?\d{3,5}$/;
+        // 🔹 Validar todos los datos antes de procesar
+        const errorValidacion = validarDatosRegistro({ nombre, apellidos, dni, email, password, password2, telefono1, telefono2, direccion, cp, ciudad, provincia, pais });
 
-        if (!telefonoRegex.test(telefono1)) {
-            return res.status(400).json({ error: "❌ El número de Teléfono 1 no es válido." });
-        }
-        if (telefono2 && !telefonoRegex.test(telefono2)) {
-            return res.status(400).json({ error: "❌ El número de Teléfono 2 no es válido." });
-        }
-
-        // Validar DNI/NIE/Pasaporte en el backend
-        if (!validarIdentificacion(dni)) {
-            return res.status(400).json({ error: "❌ El DNI/NIE/Pasaporte no es válido." });
+        if (errorValidacion) {
+            return res.status(400).json({ error: errorValidacion });
         }
 
         // Verificar si el usuario ya existe
         const usuarioExistente = await Usuario.findOne({ where: { email } });
         if (usuarioExistente) {
-            console.log("❌ Error: El correo ya está registrado.");
-            return res.status(400).json({ error: "El correo ya está registrado." });
+            console.log("BCK: Error: El correo ya está registrado.");
+            return res.status(400).json({ error: "BCK: El correo ya está registrado." });
         }
 
         // Hashear la contraseña
@@ -79,32 +74,83 @@ const registrarUsuario = async (req, res) => {
         // Enviar correo de confirmación
         await enviarCorreoConfirmacion(email, nombre, tokenVerificacion);
 
-        console.log("✅ Usuario registrado correctamente.");
+        console.log("BCK Usuario registrado correctamente.");
         res.status(200).json({ mensaje: "Registro exitoso. Revisa tu correo para activarlo." });
 
     } catch (error) {
-        console.error("❌ Error en registrarUsuario:", error);
-        return res.status(500).json({ error: "Error en el servidor. Inténtalo nuevamente." }); // ✅ Ahora devuelve JSON en caso de error
+        console.error("BCK: Error en registrarUsuario:", error);
+        return res.status(500).json({ error: "BCK: Error en el servidor. Inténtalo nuevamente." }); // BCK Ahora devuelve JSON en caso de error
     }
 };
 
-const validarDNI = (dni) => {
-    const dniRegex = /^\d{8}[A-Z]$/;
-    const nieRegex = /^[XYZ]\d{7}[A-Z]$/;
+// 🔹 Función para validar todos los datos
+const validarDatosRegistro = (datos) => {
+    const { nombre, apellidos, dni, email, password, password2, telefono1, telefono2, direccion, cp, ciudad, provincia, pais } = datos;
 
-    if (!dniRegex.test(dni) && !nieRegex.test(dni)) return false;
+    // 🔹 Validar campos obligatorios
+    const camposObligatorios = { nombre, apellidos, dni, email, password, password2, telefono1, direccion, cp, ciudad, provincia, pais };
 
-    let numero = dni.slice(0, -1).replace("X", "0").replace("Y", "1").replace("Z", "2");
-    let letra = dni.slice(-1);
+    for (const [campo, valor] of Object.entries(camposObligatorios)) {
+        if (!valor || valor.trim() === "") {
+            return `BCK: El campo ${campo.toUpperCase()} es obligatorio.`;
+        }
+    }
 
-    const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
-    return letrasValidas[numero % 23] === letra;
-};
+    // 🔹 Validar contraseñas
+    if (password !== password2) {
+        return "BCK: Las contraseñas no coinciden.";
+    }
+    if (password.length < 6) {
+        return "BCK: La contraseña debe tener al menos 6 caracteres.";
+    }
 
-const validarIdentificacion = (identificacion) => {
-    const regexExtranjeros = /^[A-Z0-9]{6,20}$/i;
+    // 🔹 Validar teléfono
+    const telefonoRegex = /^\+?\d{1,4}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{3,5}[-.\s]?\d{3,5}$/;
 
-    return validarDNI(identificacion) || regexExtranjeros.test(identificacion);
+    if (!telefonoRegex.test(telefono1)) {
+        return "BCK: El número de Teléfono 1 no es válido.";
+    }
+    if (telefono2 && !telefonoRegex.test(telefono2)) {
+        return "BCK: El número de Teléfono 2 no es válido.";
+    }
+
+    // 🔹 Validar DNI/NIE/Pasaporte
+    const dniRegex = /^\d{8}[A-Z]$/;  // DNI Español
+    const nieRegex = /^[XYZ]\d{7}[A-Z]$/; // NIE Español
+    const extranjeroRegex = /^[A-Z0-9]{6,20}$/i;  // Pasaporte o ID extranjero
+
+    if (dniRegex.test(dni)) {
+        // Si es un DNI, validar la letra
+        const numero = dni.slice(0, -1);
+        const letraUsuario = dni.slice(-1);
+        const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+        const letraCalculada = letrasValidas[numero % 23];
+
+        if (letraUsuario !== letraCalculada) {
+            return "BCK: La letra del DNI no es válida.";
+        }
+    } else if (nieRegex.test(dni)) {
+        // Si es un NIE, convertir la letra inicial y validar
+        let numero = dni.slice(1, -1);
+        let letraUsuario = dni.slice(-1);
+        const letraInicial = dni[0];
+
+        if (letraInicial === "X") numero = "0" + numero;
+        if (letraInicial === "Y") numero = "1" + numero;
+        if (letraInicial === "Z") numero = "2" + numero;
+
+        const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+        const letraCalculada = letrasValidas[parseInt(numero) % 23];
+
+        if (letraUsuario !== letraCalculada) {
+            return "BCK: La letra del NIE no es válida.";
+        }
+    } else if (!extranjeroRegex.test(dni)) {
+        // Si no es ni DNI, ni NIE, ni pasaporte válido, mostrar error
+        return "BCK: El DNI/NIE/Pasaporte no es válido.";
+    }
+
+    return null; // ✅ Si todo está bien, no hay errores
 };
 
 const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
@@ -112,8 +158,8 @@ const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-                user: "jc.canterito@gmail.com",
-                pass: "nvcf imwa wwlp wkgd"
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS
             },
         });
 
@@ -139,9 +185,9 @@ const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log("✅ Correo de confirmación enviado a:", email);
+        console.log("BCK Correo de confirmación enviado a:", email);
     } catch (error) {
-        console.error("❌ Error enviando el correo:", error);
+        console.error("BCK: Error enviando el correo:", error);
     }
 };
 
@@ -161,8 +207,14 @@ const verificarCuenta = async (req, res) => {
             { activo: true, token_verificacion: null },
             { where: { id_usuario: usuario.id_usuario } }
         );
-
-        res.send("Cuenta activada con éxito. Ahora puedes iniciar sesión.");
+        // Iniciar sesión automáticamente
+        req.session.usuario = {
+            id: usuario.id_usuario,
+            nombre: usuario.nombre,
+            email: usuario.email,
+        };
+        // Redirigir a la página de inicio con la sesión activa
+        return res.redirect("/");
     } catch (error) {
         console.error(error);
         res.status(500).send("Error en el servidor.");
@@ -192,7 +244,7 @@ const loginUsuario = async (req, res) => {
             return res.status(401).json({ error: "Contraseña incorrecta" });
         }
 
-        console.log("✅ Usuario autenticado:", usuario.email);
+        console.log("BCK Usuario autenticado:", usuario.email);
 
         // Guardar usuario en la sesión
         req.session.usuario = {
@@ -206,7 +258,7 @@ const loginUsuario = async (req, res) => {
         // Redirigir al usuario a la página de inicio
         res.redirect("/");
     } catch (error) {
-        console.error("❌ Error en loginUsuario:", error);
+        console.error("BCK: Error en loginUsuario:", error);
         res.status(500).json({ error: "Error en el servidor" });
     }
 };

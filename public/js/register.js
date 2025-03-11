@@ -14,8 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const formRegistro = document.getElementById('formRegistro');
     const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
     const mensajeConfirmacionModal = new bootstrap.Modal(document.getElementById('mensajeConfirmacionModal'));
-    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));  // ✅ Modal de error
-    const modalErrorList = document.getElementById('modalErrorList');  // ✅ Contenedor de errores
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const modalErrorList = document.getElementById('modalErrorList');
 
     formRegistro.addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -24,6 +24,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = Object.fromEntries(formData.entries());
         // ✅ Validación de datos
         let errores = [];
+
+        // 🔹 Validación de campos obligatorios (excepto teléfono 2)
+        const camposObligatorios = ["nombre", "apellidos", "dni", "email", "password", "password2", "telefono1", "direccion", "cp", "ciudad", "provincia", "pais"];
+        camposObligatorios.forEach(campo => {
+            if (!data[campo] || data[campo].trim() === "") {
+                errores.push(`❌ El campo ${campo} es obligatorio.`);
+            }
+        });
+
+        // 🔹 Validar que las contraseñas coincidan
+         if (data.password !== data.password2) {
+            errores.push("❌ Las contraseñas no coinciden.");
+        }
+
+        // 🔹 Validar longitud mínima de la contraseña
+        if (data.password.length < 6) {
+            errores.push("❌ La contraseña debe tener al menos 6 caracteres.");
+        }
+
         // 🔹 Validar número de teléfono antes de enviar la petición
         const telefonoRegex = /^\+?\d{1,4}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{3,5}[-.\s]?\d{3,5}$/;
   
@@ -38,8 +57,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const dniRegex = /^\d{8}[A-Z]$/;  // DNI Español
         const nieRegex = /^[XYZ]\d{7}[A-Z]$/; // NIE Español
         const extranjeroRegex = /^[A-Z0-9]{6,20}$/i;  // Pasaporte o ID extranjero
+        const dni = data.dni.toUpperCase().trim();
+        if (dniRegex.test(dni)) {
+            // Si es un DNI, validar la letra
+            const numero = dni.slice(0, -1);
+            const letraUsuario = dni.slice(-1);
+            const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+            const letraCalculada = letrasValidas[numero % 23];
 
-        if (!dniRegex.test(data.dni) && !nieRegex.test(data.dni) && !extranjeroRegex.test(data.dni)) {
+            if (letraUsuario !== letraCalculada) {
+                errores.push("❌ La letra del DNI no es válida.");
+            }
+        } else if (nieRegex.test(dni)) {
+            // Si es un NIE, convertir la letra inicial y validar
+            let numero = dni.slice(1, -1);
+            let letraUsuario = dni.slice(-1);
+            const letraInicial = dni[0];
+
+            if (letraInicial === "X") numero = "0" + numero;
+            if (letraInicial === "Y") numero = "1" + numero;
+            if (letraInicial === "Z") numero = "2" + numero;
+
+            const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+            const letraCalculada = letrasValidas[parseInt(numero) % 23];
+
+            if (letraUsuario !== letraCalculada) {
+                errores.push("❌ La letra del NIE no es válida.");
+            }
+        } else if (!extranjeroRegex.test(dni)) {
+            // Si no es ni DNI, ni NIE, ni pasaporte válido, mostrar error
             errores.push("❌ El DNI/NIE/Pasaporte no es válido.");
         }
 
