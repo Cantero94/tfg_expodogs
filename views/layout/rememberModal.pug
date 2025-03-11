@@ -1,0 +1,17 @@
+div#rememberModal.modal.fade(tabindex="-1" aria-labelledby="recordarPassUsuarioLabel" aria-hidden="true")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        h5#recordarPassUsuarioLabel.modal-title Registro de Usuario
+        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Cerrar")
+      .modal-body.px-5.pb-0
+        form#formRegistro(action="/recordarPassUsuario" method="POST")
+          h3 Recuperar Contraseña
+          .row
+            .col-12
+              .mb-3
+                label.form-label.text-justify.mb-3(for="email") Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña. Si no recibe el correo en unos minutos, revise su carpeta de spam.
+                input.form-control(type="email" id="email" name="email" placeholder="Introduce un correo electrónico registrado" required)
+          .modal-footer
+            button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
+            button.btn.btn-warning(type="submit") Enviar correo electrónico

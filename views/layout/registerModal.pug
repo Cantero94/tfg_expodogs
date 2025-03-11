@@ -1,0 +1,144 @@
+div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel" aria-hidden="true")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        h5#registroUsuarioLabel.modal-title Registro de Usuario
+        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Cerrar")
+      .modal-body.px-5.pb-0
+        div#registroContainer
+          if errores
+            .alert.alert-danger(role="alert")
+              ul
+                each error in errores
+                  li= error.mensaje
+          form#formRegistro
+            h3 Datos de la cuenta
+            .row
+              .col-6
+                .mb-3
+                  label.form-label(for="email") Correo Electrónico:
+                  input.form-control(type="email" id="email" name="email" required)
+              .col-6
+                .mb-3
+                  label.form-label(for="password") Contraseña:
+                  input.form-control(type="password" id="password" name="password" required)
+            .row
+              .col-6
+              .col-6
+                .mb-3
+                  label.form-label(for="password2") Repetir Contraseña:
+                  input.form-control(type="password" id="password2" name="password2" required)
+            small.text-muted.text-justify
+                | Al registrarte en esta plataforma, declaras bajo tu responsabilidad que eres el propietario legal de los perros que inscribas. 
+                | En caso de no serlo, se podrán anular los puntos que hayas obtenido y aplicar las sanciones correspondientes.
+            .mb-3.my-1
+                label
+                input#condiciones(type="checkbox" name="condiciones" required)
+                |  He leído y acepto estas condiciones
+            h3 Datos del propietario de la cuenta
+            fieldset#propietarioFields(disabled)
+              .row
+                  .col-4
+                      .mb-3
+                          label.form-label(for="nombre") Nombre:
+                          input.form-control(type="text" id="nombre" name="nombre" required)
+                  .col-4
+                      .mb-3
+                          label.form-label(for="apellidos") Apellidos:
+                          input.form-control(type="text" id="apellidos" name="apellidos" required)
+                  .col-4
+                      .mb-3
+                          label.form-label(for="dni") DNI:
+                          input.form-control(type="text" id="dni" name="dni" required)
+              .row
+                  .col-4
+                      .mb-3
+                          label.form-label(for="pais") País:
+                          input.form-control(type="text" id="pais" name="pais" required)
+                  .col-4
+                      .mb-3
+                          label.form-label(for="provincia") Provincia:
+                          input.form-control(type="text" id="provincia" name="provincia" required)
+                  .col-4
+                      .mb-3
+                          label.form-label(for="ciudad") Ciudad:
+                          input.form-control(type="text" id="ciudad" name="ciudad" required)
+              .row
+                  .col-3 
+                      .mb-3
+                          label.form-label(for="cp") CP:
+                          input.form-control(type="text" id="cp" name="cp" required)
+                  .col-9
+                      .mb-3
+                          label.form-label(for="direccion") Dirección:
+                          input.form-control(type="text" id="direccion" name="direccion" required)
+              .row
+                  .col-6
+                      .mb-3
+                          label.form-label(for="telefono1") Teléfono 1:
+                          input.form-control(type="text" id="telefono1" name="telefono1" required)
+                  .col-6
+                      .mb-3
+                          label.form-label(for="telefono2") Teléfono 2:
+                          input.form-control(type="text" id="telefono2" name="telefono2")
+          
+            .modal-footer
+              button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
+              button.btn.btn-warning(type="submit") Registrar Usuario
+
+div#mensajeConfirmacionModal.modal.fade(tabindex="-1" aria-labelledby="mensajeConfirmacionLabel" aria-hidden="true")
+  .modal-dialog
+    .modal-content
+      .modal-header
+        h5#mensajeConfirmacionLabel.modal-title Registrado correctamente
+        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Cerrar")
+      .modal-body
+        p Hemos enviado un correo electrónico con un enlace para activar tu cuenta. Por favor, revisa tu bandeja de entrada.
+      .modal-footer
+        button.btn.btn-warning(type="button" data-bs-dismiss="modal") Cerrar
+
+//- SCRIPT para manejar el checkbox y el envío del formulario
+script.
+  document.addEventListener('DOMContentLoaded', function() {
+      var condicionesCheckbox = document.getElementById('condiciones');
+      var propietarioFields = document.getElementById('propietarioFields');
+
+      condicionesCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+          propietarioFields.removeAttribute('disabled');
+        } else {
+          propietarioFields.setAttribute('disabled', '');
+        }
+      });
+
+      const formRegistro = document.getElementById('formRegistro');
+      const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+      const mensajeConfirmacionModal = new bootstrap.Modal(document.getElementById('mensajeConfirmacionModal'));
+
+      formRegistro.addEventListener('submit', async function(event) {
+          event.preventDefault();
+
+          const formData = new FormData(formRegistro);
+          const data = Object.fromEntries(formData.entries());
+
+          try {
+              const response = await fetch('/registrarUsuario', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(data),
+              });
+
+              if (response.ok) {
+                  // Cerrar modal de registro y abrir el de confirmación
+                  registerModal.hide();
+                  mensajeConfirmacionModal.show();
+              } else {
+                  const errorData = await response.json();
+                  alert(errorData.error || "Ocurrió un error. Inténtalo nuevamente.");
+              }
+          } catch (error) {
+              console.error('Error en el registro:', error);
+              alert("Ocurrió un error inesperado.");
+          }
+      });
+  });
