@@ -5,14 +5,14 @@ import {
     verificarCuenta,
     loginUsuario,
     logoutUsuario,
-} from "../controllers/clienteController.js";
+} from "../controllers/authController.js";
 
 const router = express.Router();
 
 router.get("/", paginaInicio);
 router.post("/registrarUsuario", registrarUsuario);
-router.post("/loginUsuario", loginUsuario);
 router.get("/verificar-cuenta", verificarCuenta);
+router.post("/loginUsuario", loginUsuario);
 router.post("/logout", logoutUsuario);
 
 

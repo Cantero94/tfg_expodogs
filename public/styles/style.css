@@ -51,3 +51,8 @@
 .text-justify {
     text-align: justify;
 }
+
+.is-invalid {
+    border: 1px solid red !important;
+    background-color: #ffebeb !important;
+}

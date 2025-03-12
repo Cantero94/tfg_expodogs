@@ -1,0 +1,27 @@
+block asidepanel
+    if !usuario
+        div
+            form#loginForm(action="/loginUsuario" method="POST")
+                div(class='form-group')
+                    label(for='email') Correo Electrónico
+                    input#email.form-control(type='email' name="email" placeholder='Tu correo electrónico' required)
+                    small#emailError.text-danger  <!-- Mensaje de error aquí -->
+
+                div(class='form-group')
+                    label(for='password') Contraseña
+                    input#password.form-control(type='password' name="password" placeholder='Tu contraseña' required)
+                    small#passwordError.text-danger  <!-- Mensaje de error aquí -->
+
+                div.d-flex.justify-content-end
+                    button.btn.btn-warning.mt-2(type='submit') Iniciar Sesión
+
+
+            p(class='mt-3')
+                a.text-dark(id="aside-remember", href="#", data-bs-toggle="modal", data-bs-target="#rememberModal") ¿Olvidaste tu contraseña? Haz clic aquí.
+            p
+                a.text-dark(id="aside-register", href="#", data-bs-toggle="modal", data-bs-target="#registerModal") ¿No estás registrado? Regístrate aquí.
+
+    else
+        h3 Bienvenido, #{usuario.nombre}
+        form(action="/logout" method="POST")
+            button.btn.btn-warning(type='submit') Cerrar Sesión
