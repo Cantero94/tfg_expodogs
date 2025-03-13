@@ -32,15 +32,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Aquí usamos result.errores (un array) en lugar de result.error
                 result.errores.forEach(error => {
                     if (error.includes("correo no está registrado")) {
-                        emailError.textContent = "❌ Este correo no está registrado.";
+                        emailError.textContent = "Este correo no está registrado.";
                         emailInput.classList.add("is-invalid");
                     }
                     if (error.includes("Contraseña incorrecta")) {
-                        passwordError.textContent = "❌ La contraseña es incorrecta.";
+                        passwordError.textContent = "La contraseña es incorrecta.";
                         passwordInput.classList.add("is-invalid");
                     }
                     if (error.includes("aún no está activada")) {
-                        emailError.textContent = "❌ Tu cuenta aún no está activada, comprueba la bandeja de entrada de tu correo electrónico y haz click en el enlace para activarla.";
+                        emailError.textContent = "Tu cuenta aún no está activada, comprueba la bandeja de entrada de tu correo electrónico y haz click en el enlace para activarla.";
+                    }
+                    if (error.includes("bloqueada")) {
+                        emailError.textContent = "Tu cuenta está bloqueada. Por favor, contáctanos para resolver este problema.";
                     }
                 });
                 return;
@@ -51,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         } catch (error) {
             console.error("❌ Error en la petición al servidor:", error);
-            passwordError.textContent = "❌ Error de conexión. Inténtalo nuevamente.";
+            passwordError.textContent = "Error de conexión. Inténtalo nuevamente.";
         }
     });
 });

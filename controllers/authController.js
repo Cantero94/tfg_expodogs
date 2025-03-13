@@ -91,7 +91,7 @@ const registrarUsuario = async (req, res) => {
 
     } catch (error) {
         console.error("BCK: Error en registrarUsuario:", error);
-        return res.status(500).json({ error: "BCK: Error en el servidor. Inténtalo nuevamente." }); // BCK Ahora devuelve JSON en caso de error
+        return res.status(500).json({ error: "BCK: Error en el servidor. Inténtalo nuevamente." });
     }
 };
 
@@ -242,44 +242,45 @@ const verificarCuenta = async (req, res) => {
 
 const loginUsuario = async (req, res) => {
     try {
-        console.log("📩 Datos recibidos en /loginUsuario:", req.body);
-
         const { email, password } = req.body;
         let errores = [];
-
+        // No hay datos
         if (!email || !password) {
             errores.push("Correo y contraseña son obligatorios.");
+        // Hay datos incorrectos
         } else {
             const usuario = await Usuario.findOne({ where: { email } });
-
+            // No existe
             if (!usuario) {
                 errores.push("El correo no está registrado.");
+            // No está activado	
             } else if (!usuario.activo) {
                 errores.push("Tu cuenta aún no está activada. Revisa tu correo.");
+            // Está baneado
+            } else if (usuario.baneado) {
+                errores.push("Tu cuenta ha sido bloqueada.");
+            // Contraseña incorrecta
             } else {
                 const passwordMatch = await bcrypt.compare(password, usuario.password);
                 if (!passwordMatch) {
                     errores.push("Contraseña incorrecta.");
-                } else {
-                    // ✅ Usuario autenticado, guardar en sesión correctamente
+                } else { //Si todo está correcto iniciamos sesión
                     console.log("✅ Usuario autenticado:", usuario.email);
-
                     req.session.usuario = {
                         id: usuario.id_usuario,
                         nombre: usuario.nombre,
                         email: usuario.email,
                     };
-
-                    console.log("📌 Sesión guardada:", req.session.usuario);
-                    return res.status(200).json({ mensaje: "Inicio de sesión exitoso" });
                 }
             }
-        }
-
+        } 
+        
         if (errores.length > 0) {
-            console.log("❌ Enviando errores JSON al frontend:", errores);
             return res.status(400).json({ errores });
         }
+        
+        console.log("📌 Sesión guardada:", req.session.usuario);
+        return res.status(200).json({ mensaje: "Inicio de sesión exitoso" });
 
     } catch (error) {
         console.error("❌ Error en loginUsuario:", error);
@@ -297,6 +298,113 @@ const logoutUsuario = (req, res) => {
     });
 };
 
+const recordarPassUsuario = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const usuario = await Usuario.findOne({ where: { email } });
+
+        if (!usuario) {
+            return res.status(400).json({ error: "Este correo no está registrado." });
+        }
+
+        // Generar un nuevo token de verificación
+        const tokenVerificacion = crypto.randomBytes(32).toString("hex");
+        await Usuario.update(
+            { token_verificacion: tokenVerificacion },
+            { where: { email } }
+        );
+
+        // Enviar correo con enlace para restablecer la contraseña
+        await enviarCorreoRestablecer(email, usuario.nombre, tokenVerificacion);
+
+        console.log(`📧 Enlace de recuperación enviado a: ${email}`);
+        return res.status(200).json({ mensaje: "Revisa tu correo para restablecer tu contraseña." });
+
+    } catch (error) {
+        console.error("❌ Error en recordarPassUsuario:", error);
+        return res.status(500).json({ error: "Error en el servidor. Inténtalo nuevamente." });
+    }
+};
+
+
+
+const enviarCorreoRestablecer = async (email, nombre, token) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS
+            },
+        });
+
+        const mailOptions = {
+            from: "jc.canterito@gmail.com",
+            to: email,
+            subject: "Restablecimiento de contraseña en Expodogs",
+            html: `
+            <div style="font-family: Arial, sans-serif; width:50%; margin:0 auto;">
+                <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
+                    <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
+                </div>
+                <h1 style="text-align: center;">Hola, ${nombre}</h1>
+                <div style="padding: 0px 20px; text-align: center;">
+                    <p style="text-align: left;">Hemos recibido una solicitud para restablecer tu contraseña. 
+                    Si no has solicitado esto, ignora este correo. Para continuar, haz clic en el siguiente enlace:</p>
+                    <a href="http://localhost:4000/restablecer-password?token=${token}" 
+                    style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                    Restablecer contraseña
+                    </a>
+                </div>
+            </div>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("📧 Correo de restablecimiento enviado a:", email);
+    } catch (error) {
+        console.error("❌ Error enviando el correo de recuperación:", error);
+    }
+};
+
+
+const restablecerPassword = async (req, res) => {
+    try {
+        const { token } = req.query;
+
+        const usuario = await Usuario.findOne({ where: { token_verificacion: token } });
+
+        if (!usuario) {
+            req.session.errores = ["Enlace inválido o ya utilizado."];
+            console.log("❌ Intento de uso de token inválido");
+            return req.session.save(() => res.redirect("/"));
+        }
+
+        // Restablecer la contraseña a 123456 y activar la cuenta si no estaba activada
+        const hashedPassword = await bcrypt.hash("asdfgh", 10);
+        await Usuario.update(
+            { password: hashedPassword, token_verificacion: null, activo: true },
+            { where: { id_usuario: usuario.id_usuario } }
+        );
+
+        // Iniciar sesión automáticamente
+        req.session.usuario = {
+            id: usuario.id_usuario,
+            nombre: usuario.nombre,
+            email: usuario.email,
+        };
+
+        req.session.mensaje = "Tu contraseña ha sido restablecida a '123456'. Te recomendamos cambiarla.";
+        return req.session.save(() => res.redirect("/"));
+
+    } catch (error) {
+        console.error("❌ Error en restablecerPassword:", error);
+        req.session.errores = ["Error en el servidor. Inténtalo nuevamente."];
+        res.redirect("/");
+    }
+};
+
+
 // Exportar funciones
 export {
     paginaInicio,
@@ -304,4 +412,6 @@ export {
     verificarCuenta,
     loginUsuario,
     logoutUsuario,
+    recordarPassUsuario,
+    restablecerPassword
 };

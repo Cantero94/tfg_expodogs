@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const formRegistro = document.getElementById('formRegistro');
     const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
     const mensajeConfirmacionModal = new bootstrap.Modal(document.getElementById('mensajeConfirmacionModal'));
+    const mensajeConfirmacionTitulo = document.getElementById("mensajeConfirmacionTitulo");
+    const mensajeConfirmacionTexto = document.getElementById("mensajeConfirmacionTexto");
     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
     const modalErrorList = document.getElementById('modalErrorList');
 
@@ -114,6 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 // 🔹 Si el registro fue exitoso, cerrar el modal de registro y abrir el de confirmación
                 registerModal.hide();
+                mensajeConfirmacionTitulo.textContent = "Registro completado!";
+                mensajeConfirmacionTexto.textContent = "Hemos enviado un correo electrónico con un enlace para activar tu cuenta. Por favor, revisa tu bandeja de entrada.";
                 mensajeConfirmacionModal.show();
 
                 formRegistro.reset();
