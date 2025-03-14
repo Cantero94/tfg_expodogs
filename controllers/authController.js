@@ -19,15 +19,18 @@ const paginaInicio = async (req, res) => {
         const errores = req.session.errores || [];
         const erroresLogin = req.session.erroresLogin || [];
         const usuarioIntento = req.session.usuarioIntento || "";
+        const mensaje = req.session.mensaje || "";
 
         req.session.errores = [];
         req.session.erroresLogin = [];
         req.session.usuarioIntento = "";
+        req.session.mensaje = "";
 
         res.render("paginainicio", {
             pagina: "Inicio",
             exposiciones,
             usuario: req.session.usuario || null,
+            mensaje,
             errores,
             erroresLogin,
             usuarioIntento,
@@ -54,8 +57,8 @@ const registrarUsuario = async (req, res) => {
         // Verificar si el usuario ya existe
         const usuarioExistente = await Usuario.findOne({ where: { email } });
         if (usuarioExistente) {
-            console.log("BCK: Error: El correo ya está registrado.");
-            return res.status(400).json({ error: "BCK: El correo ya está registrado." });
+            console.log("❌ Error: El correo ya está registrado.");
+            return res.status(400).json({ error: "BCK: Error: El correo ya está registrado. Si no recuerda su contraseña puede recuperarla haciendo click en '¿Olvidaste tu contraseña?'" });
         }
 
         // Hashear la contraseña
@@ -86,11 +89,11 @@ const registrarUsuario = async (req, res) => {
         // Enviar correo de confirmación
         await enviarCorreoConfirmacion(email, nombre, tokenVerificacion);
 
-        console.log("BCK Usuario registrado correctamente.");
+        console.log("✅ Usuario registrado correctamente.");
         res.status(200).json({ mensaje: "Registro exitoso. Revisa tu correo para activarlo." });
 
     } catch (error) {
-        console.error("BCK: Error en registrarUsuario:", error);
+        console.error("❌ Error en registrarUsuario:", error);
         return res.status(500).json({ error: "BCK: Error en el servidor. Inténtalo nuevamente." });
     }
 };
@@ -162,7 +165,7 @@ const validarDatosRegistro = (datos) => {
         return "BCK: El DNI/NIE/Pasaporte no es válido.";
     }
 
-    return null; // ✅ Si todo está bien, no hay errores
+    return null; // Si todo está bien, no hay errores
 };
 
 const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
@@ -197,9 +200,9 @@ const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log("BCK Correo de confirmación enviado a:", email);
+        console.log("📧 Correo de confirmación enviado a:", email);
     } catch (error) {
-        console.error("BCK: Error enviando el correo:", error);
+        console.error("❌ Error enviando el correo:", error);
     }
 };
 
@@ -232,6 +235,8 @@ const verificarCuenta = async (req, res) => {
             nombre: usuario.nombre,
             email: usuario.email,
         };
+
+        req.session.mensaje = "Su cuenta ha sido activada correctamente. ¡Bienvenido!";
         // Redirigir a la página de inicio con la sesión activa
         return res.redirect("/");
     } catch (error) {
@@ -291,7 +296,7 @@ const loginUsuario = async (req, res) => {
 const logoutUsuario = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            console.error("Error al cerrar sesión:", err);
+            console.error("❌ Error al cerrar sesión:", err);
             return res.status(500).json({ error: "Error en el servidor" });
         }
         res.redirect("/");
@@ -361,7 +366,7 @@ const enviarCorreoRestablecer = async (email, nombre, token) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log("📧 Correo de restablecimiento enviado a:", email);
+        console.log("📧 Correo de recuperación enviado a:", email);
     } catch (error) {
         console.error("❌ Error enviando el correo de recuperación:", error);
     }
@@ -394,7 +399,7 @@ const restablecerPassword = async (req, res) => {
             email: usuario.email,
         };
 
-        req.session.mensaje = "Tu contraseña ha sido restablecida a '123456'. Te recomendamos cambiarla.";
+        req.session.mensaje = "Tu contraseña ha sido restablecida a '123456'. Te recomendamos cambiarla en el apartado Mi Cuenta.";
         return req.session.save(() => res.redirect("/"));
 
     } catch (error) {

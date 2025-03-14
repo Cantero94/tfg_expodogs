@@ -23,5 +23,16 @@ block asidepanel
 
     else
         h3 Bienvenido, #{usuario.nombre}
+        ul.list-group.my-3.fs-4
+            li.list-group-item
+                a(href="") Mi Cuenta
+            li.list-group-item
+                a(href="") Mis Perros
+            li.list-group-item
+                a(href="") Inscribir Perro en Exposición
+            li.list-group-item
+                a(href="") Mis Inscripciones y Pagos
+            li.list-group-item
+                a(href="") Dorsales
         form(action="/logout" method="POST")
             button.btn.btn-warning(type='submit') Cerrar Sesión

@@ -5,9 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Obtener el modal de confirmación
     const rememberModal = new bootstrap.Modal(document.getElementById("rememberModal"));
-    const mensajeConfirmacionModal = new bootstrap.Modal(document.getElementById("mensajeConfirmacionModal"));
-    const mensajeConfirmacionTitulo = document.getElementById("mensajeConfirmacionTitulo");
-    const mensajeConfirmacionTexto = document.getElementById("mensajeConfirmacionTexto");
+    const mensajeModal = new bootstrap.Modal(document.getElementById("mensajeModal"));
+    const mensajeTitulo = document.getElementById("mensajeTitulo");
+    const mensajeTexto = document.getElementById("mensajeTexto");
 
     form.addEventListener("submit", async function (event) {
         event.preventDefault(); // 🔹 Evitar la recarga de la página
@@ -39,9 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 rememberModal.hide();
 
                 // 🔹 Mostrar el modal de confirmación
-                mensajeConfirmacionTitulo.textContent = "Correo de recuperación enviado";
-                mensajeConfirmacionTexto.textContent = "Se ha enviado un correo con instrucciones para restablecer tu contraseña. Revisa tu bandeja de entrada.";
-                mensajeConfirmacionModal.show();
+                mensajeTitulo.textContent = "Correo de recuperación enviado";
+                mensajeTexto.textContent = "Se ha enviado un correo con instrucciones para restablecer tu contraseña. Revisa tu bandeja de entrada.";
+                mensajeModal.show();
             }
             
         } catch (error) {

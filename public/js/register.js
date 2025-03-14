@@ -1,60 +1,64 @@
-// Script para partials/registerModal.pug
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var condicionesCheckbox = document.getElementById('condiciones');
     var propietarioFields = document.getElementById('propietarioFields');
 
-    condicionesCheckbox.addEventListener('change', function() {
-      if (this.checked) {
-        propietarioFields.removeAttribute('disabled');
-      } else {
-        propietarioFields.setAttribute('disabled', '');
-      }
+    condicionesCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+            propietarioFields.removeAttribute('disabled');
+        } else {
+            propietarioFields.setAttribute('disabled', '');
+        }
     });
 
     const formRegistro = document.getElementById('formRegistro');
     const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
-    const mensajeConfirmacionModal = new bootstrap.Modal(document.getElementById('mensajeConfirmacionModal'));
-    const mensajeConfirmacionTitulo = document.getElementById("mensajeConfirmacionTitulo");
-    const mensajeConfirmacionTexto = document.getElementById("mensajeConfirmacionTexto");
+    const mensajeModal = new bootstrap.Modal(document.getElementById('mensajeModal'));
+    const mensajeTitulo = document.getElementById("mensajeTitulo");
+    const mensajeTexto = document.getElementById("mensajeTexto");
     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
     const modalErrorList = document.getElementById('modalErrorList');
 
-    formRegistro.addEventListener('submit', async function(event) {
+    formRegistro.addEventListener('submit', async function (event) {
         event.preventDefault();
 
         const formData = new FormData(formRegistro);
         const data = Object.fromEntries(formData.entries());
-        // ✅ Validación de datos
-        let errores = [];
 
-        // 🔹 Validación de campos obligatorios (excepto teléfono 2)
+        // ✅ Limpiar errores previos
+        document.querySelectorAll(".text-danger").forEach(e => e.textContent = "");
+        document.querySelectorAll(".form-control").forEach(e => e.classList.remove("is-invalid"));
+
+        let errores = {};
+
+        // 🔹 Validación de campos obligatorios
         const camposObligatorios = ["nombre", "apellidos", "dni", "email", "password", "password2", "telefono1", "direccion", "cp", "ciudad", "provincia", "pais"];
         camposObligatorios.forEach(campo => {
             if (!data[campo] || data[campo].trim() === "") {
-                errores.push(`❌ El campo ${campo} es obligatorio.`);
+                errores[campo] = `El campo ${campo} es obligatorio.`;
             }
         });
 
-        // 🔹 Validar que las contraseñas coincidan
-         if (data.password !== data.password2) {
-            errores.push("❌ Las contraseñas no coinciden.");
+        // 🔹 Validar contraseñas
+        if (data.password !== data.password2) {
+            errores["password2"] = "Las contraseñas no coinciden.";
         }
-
-        // 🔹 Validar longitud mínima de la contraseña
         if (data.password.length < 6) {
-            errores.push("❌ La contraseña debe tener al menos 6 caracteres.");
+            errores["password"] = "La contraseña debe tener al menos 6 caracteres.";
         }
 
-        // 🔹 Validar número de teléfono antes de enviar la petición
+        // 🔹 Validar teléfono
         const telefonoRegex = /^\+?\d{1,4}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{3,5}[-.\s]?\d{3,5}$/;
-  
+        if(data.telefono1 === data.telefono2) {
+            errores["telefono2"] = "El Teléfono 2 no puede ser igual al Teléfono 1.";
+        }
+
         if (!telefonoRegex.test(data.telefono1)) {
-            errores.push("❌ El número de Teléfono 1 no es válido.");
+            errores["telefono1"] = "El número de Teléfono 1 no es válido.";
         }
         if (data.telefono2 && !telefonoRegex.test(data.telefono2)) {
-            errores.push("❌ El número de Teléfono 2 no es válido.");
+            errores["telefono2"] = "El número de Teléfono 2 no es válido.";
         }
-        
+
         // 🔹 Validar DNI/NIE/Pasaporte
         const dniRegex = /^\d{8}[A-Z]$/;  // DNI Español
         const nieRegex = /^[XYZ]\d{7}[A-Z]$/; // NIE Español
@@ -68,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const letraCalculada = letrasValidas[numero % 23];
 
             if (letraUsuario !== letraCalculada) {
-                errores.push("❌ La letra del DNI no es válida.");
+                errores["dni"] = "La letra del DNI no es válida.";
             }
         } else if (nieRegex.test(dni)) {
             // Si es un NIE, convertir la letra inicial y validar
@@ -84,26 +88,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const letraCalculada = letrasValidas[parseInt(numero) % 23];
 
             if (letraUsuario !== letraCalculada) {
-                errores.push("❌ La letra del NIE no es válida.");
+                errores["dni"] = "La letra del NIE no es válida.";
             }
         } else if (!extranjeroRegex.test(dni)) {
             // Si no es ni DNI, ni NIE, ni pasaporte válido, mostrar error
-            errores.push("❌ El DNI/NIE/Pasaporte no es válido.");
+            errores["dni"] = "El DNI/NIE/Pasaporte no es válido.";
         }
 
-        if (errores.length > 0) {
-            modalErrorList.innerHTML = ""; // Limpiar errores previos
 
-            errores.forEach(error => {
-                let li = document.createElement("li");
-                li.textContent = error;
-                modalErrorList.appendChild(li);
+        // 🔹 Mostrar errores debajo de los inputs
+        if (Object.keys(errores).length > 0) {
+            Object.keys(errores).forEach(campo => {
+                let errorElement = document.getElementById(`error-${campo}`);
+                let inputElement = document.getElementById(campo);
+                if (errorElement) errorElement.textContent = `❌ ${errores[campo]}`;
+                if (inputElement) inputElement.classList.add("is-invalid");
             });
-
-            errorModal.show();  // 🔹 Mostrar modal de error y detener envío
             return;
         }
 
+        // 🔹 Enviar datos al servidor si no hay errores
         try {
             const response = await fetch('/registrarUsuario', {
                 method: 'POST',
@@ -114,35 +118,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (response.ok) {
-                // 🔹 Si el registro fue exitoso, cerrar el modal de registro y abrir el de confirmación
                 registerModal.hide();
-                mensajeConfirmacionTitulo.textContent = "Registro completado!";
-                mensajeConfirmacionTexto.textContent = "Hemos enviado un correo electrónico con un enlace para activar tu cuenta. Por favor, revisa tu bandeja de entrada.";
-                mensajeConfirmacionModal.show();
+                mensajeTitulo.textContent = "Registro completado!";
+                mensajeTexto.textContent = "Hemos enviado un correo electrónico con un enlace para activar tu cuenta. Por favor, revisa tu bandeja de entrada.";
+                mensajeModal.show();
 
                 formRegistro.reset();
                 propietarioFields.setAttribute('disabled', '');
             } else {
-                // 🔹 Si hay errores, mostrarlos en el modal de errores
-                modalErrorList.innerHTML = ""; // Limpiar errores previos
-                
+                modalErrorList.innerHTML = "";
                 if (result.error) {
                     let li = document.createElement("li");
                     li.textContent = result.error;
                     modalErrorList.appendChild(li);
                 }
-
-                errorModal.show();  // 🔹 Mostrar modal de error sin cerrar el de registro
+                errorModal.show();
             }
         } catch (error) {
             console.error('Error en el registro:', error);
-            modalErrorList.innerHTML = ""; // Limpiar errores previos
-
+            modalErrorList.innerHTML = "";
             let li = document.createElement("li");
             li.textContent = "Error inesperado. Inténtalo nuevamente.";
             modalErrorList.appendChild(li);
-            
-            errorModal.show();  // 🔹 Mostrar modal de error en caso de fallo en la petición
+            errorModal.show();
         }
     });
 });
