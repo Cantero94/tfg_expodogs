@@ -12,20 +12,18 @@ html(lang="es")
     body(class='d-flex flex-column min-vh-100')        
         include header
         .d-flex.flex-row.flex-grow-1
-            main.flex-grow-1.col-10
+            main.flex-grow-1.col-12.col-xxl-9
                 .container.h-100.p-5
-                    include welcome
                     block content
-                    include atention
-            aside.flex-grow-1.col-2.position-sticky
+            aside.flex-grow-1.col-0.col-xxl-3
                 .container.shadow.h-100.p-5
                     block asidepanel
-                    
+        include ../partials/loginModal
         include ../partials/registerModal
         include ../partials/rememberModal
         include ../partials/errorModal
         include ../partials/mensajeModal.pug
-
+        
         include footer
 
         script(src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
@@ -34,6 +32,7 @@ html(lang="es")
         script(src="/js/login.js")
         script(src="/js/remember.js")
         script(src="/js/mensaje.js")
+        script(src="/js/miCuenta.js")
         script.
             window.errores = !{JSON.stringify(errores || [])};
             window.mensaje = !{JSON.stringify(mensaje || "")};

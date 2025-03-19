@@ -9,19 +9,19 @@ div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel
           form#formRegistro
             h3 Datos de la cuenta
             .row
-              .col-6
+              .col-12.col-md-6
                 .mb-3
                   label.form-label(for="email") Correo Electrónico:
                   input.form-control(type="email" id="email" name="email" required)
                   small#error-email.text-danger
-              .col-6
+              .col-12.col-md-6
                 .mb-3
                   label.form-label(for="password") Contraseña:
                   input.form-control(type="password" id="password" name="password" required)
                   small#error-password.text-danger
-            .row
-              .col-6
-              .col-6
+            
+              .col-0.col-md-6
+              .col-12.col-md-6
                 .mb-3
                   label.form-label(for="password2") Repetir Contraseña:
                   input.form-control(type="password" id="password2" name="password2" required)
@@ -36,38 +36,38 @@ div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel
             h3 Datos del propietario de la cuenta
             fieldset#propietarioFields(disabled)
               .row
-                  .col-4
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="nombre") Nombre:
                           input.form-control(type="text" id="nombre" name="nombre" required)
                           small#error-nombre.text-danger
-                  .col-4
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="apellidos") Apellidos:
                           input.form-control(type="text" id="apellidos" name="apellidos" required)
                           small#error-apellidos.text-danger
-                  .col-4
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="dni") DNI:
                           input.form-control(type="text" id="dni" name="dni" required)
                           small#error-dni.text-danger
-              .row
-                  .col-4
+              
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="pais") País:
                           input.form-control(type="text" id="pais" name="pais" required)
                           small#error-pais.text-danger
-                  .col-4
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="provincia") Provincia:
                           input.form-control(type="text" id="provincia" name="provincia" required)
                           small#error-provincia.text-danger
-                  .col-4
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="ciudad") Ciudad:
                           input.form-control(type="text" id="ciudad" name="ciudad" required)
                           small#error-ciudad.text-danger
-              .row
+              
                   .col-3 
                       .mb-3
                           label.form-label(for="cp") CP:
@@ -78,13 +78,13 @@ div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel
                           label.form-label(for="direccion") Dirección:
                           input.form-control(type="text" id="direccion" name="direccion" required)
                           small#error-direccion.text-danger
-              .row
-                  .col-6
+              
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="telefono1") Teléfono 1:
                           input.form-control(type="text" id="telefono1" name="telefono1" required)
                           small#error-telefono1.text-danger
-                  .col-6
+                  .col-12.col-md-6.col-lg-4
                       .mb-3
                           label.form-label(for="telefono2") Teléfono 2:
                           input.form-control(type="text" id="telefono2" name="telefono2")

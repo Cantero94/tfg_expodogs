@@ -14,3 +14,24 @@ header
                         a.nav-link(id="nav-nosotros", href="/exposiciones-pasadas") Exposiciones Pasadas
                     li.nav-item
                         a.nav-link(id="nav-contacto", href="/contacto") Contacto
+                    li.nav-item.d-xxl-none
+                        if !usuario
+                            button.btn.btn-warning(data-bs-toggle="modal" data-bs-target="#loginModal") Iniciar Sesión / Registrarse
+                        else
+                            .dropdown
+                                button#dropdownMenuButton.btn.btn-warning.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false') Hola, #{usuario.nombre}
+                                ul.dropdown-menu(aria-labelledby='dropdownMenuButton')
+                                    li
+                                        a.dropdown-item(href="/miCuenta") Mi Cuenta
+                                    li
+                                        a.dropdown-item(href="/misPerros") Mis Perros
+                                    li
+                                        a.dropdown-item(href="/inscribirPerro") Inscribir Perro en Exposición
+                                    li
+                                        a.dropdown-item(href="/misInscripciones") Mis Inscripciones y Pagos
+                                    li
+                                        a.dropdown-item(href="/dorsales") Dorsales
+                                    div.text-center.mt-1
+                                        form(action="/logout" method="POST")
+                                            button.btn.btn-warning(type='submit') Cerrar Sesión
+                    

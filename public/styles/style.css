@@ -1,5 +1,5 @@
 .card {
-    width: 300px;
+    max-width: 300px;
     max-height: 500px!important;
     margin: auto;
 }
@@ -49,7 +49,7 @@
 }
 
 .text-justify {
-    text-align: justify;
+    text-align: justify !important;
 }
 
 .is-invalid {

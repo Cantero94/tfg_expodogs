@@ -1,0 +1,80 @@
+extends layout/layout
+
+block content
+  .container.mt-5
+    h2 Mi Cuenta
+    form#formActualizarCuenta(action="/actualizarCuenta" method="POST")
+      .row
+        .col-md-6
+          .mb-3
+            label(for="email") Correo Electrónico:
+            input#email.form-control.bg-light(type="email" name="email" required readonly value=usuario.email)
+            small#error-nombre.text-danger
+        .col-md-6
+          .mb-3
+            label(for="password") Nueva Contraseña (opcional):
+            input#password.form-control(type="password" name="password" placeholder="Dejar en blanco si no deseas cambiarla")
+      .row 
+        .col-md-6
+        .col-md-6
+          .mb-3
+            label.form-label(for="password2") Repetir Contraseña:
+            input.form-control(type="password" id="password2" name="password2" placeholder="Dejar en blanco si no deseas cambiarla")
+            small#error-password2.text-danger
+      .row
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="nombre") Nombre:
+            input#nombre.form-control(type="text" name="nombre" required value=usuario.nombre)
+            small#error-nombre.text-danger
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="apellidos") Apellidos:
+            input#apellidos.form-control(type="text" name="apellidos" required value=usuario.apellidos)
+            small#error-apellidos.text-danger
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="dni") DNI:
+            input#dni.form-control(type="text" name="dni" required value=usuario.dni)
+            small#error-dni.text-danger
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="pais") País:
+            input#pais.form-control(type="text" name="pais" required value=usuario.pais)
+            small#error-pais.text-danger
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="provincia") Provincia:
+            input#provincia.form-control(type="text" name="provincia" required value=usuario.provincia)
+            small#error-provincia.text-danger
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="ciudad") Ciudad:
+            input#ciudad.form-control(type="text" name="ciudad" required value=usuario.ciudad)
+            small#error-ciudad.text-danger
+        .col-md-3
+          .mb-3
+            label(for="cp") Código Postal:
+            input#cp.form-control(type="text" name="cp" required value=usuario.cp)
+            small#error-cp.text-danger
+        .col-md-9
+          .mb-3
+            label(for="direccion") Dirección:
+            input#direccion.form-control(type="text" name="direccion" required value=usuario.direccion)
+            small#error-direccion.text-danger    
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="telefono1") Teléfono 1:
+            input#telefono1.form-control(type="text" name="telefono1" required value=usuario.telefono1)
+            small#error-telefono1.text-danger
+        .col-md-6.col-lg-4
+          .mb-3
+            label(for="telefono2") Teléfono 2:
+            input#telefono2.form-control(type="text" name="telefono2" value=usuario.telefono2)
+            small#error-telefono2.text-danger
+      .text-center
+        button.btn.btn-warning.mt-3(type="submit") Actualizar Datos
+
+        
+block asidepanel
+    include asidePanel

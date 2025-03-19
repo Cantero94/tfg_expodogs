@@ -1,16 +1,15 @@
 block asidepanel
     if !usuario
-        div
             form#loginForm(action="/loginUsuario" method="POST")
                 div(class='form-group')
                     label(for='email') Correo Electrónico
                     input#email.form-control(type='email' name="email" placeholder='Tu correo electrónico' required)
-                    small#emailError.text-danger  <!-- Mensaje de error aquí -->
+                    small#emailError.text-danger
 
                 div(class='form-group')
                     label(for='password') Contraseña
                     input#password.form-control(type='password' name="password" placeholder='Tu contraseña' required)
-                    small#passwordError.text-danger  <!-- Mensaje de error aquí -->
+                    small#passwordError.text-danger
 
                 div.d-flex.justify-content-end
                     button.btn.btn-warning.mt-2(type='submit') Iniciar Sesión
@@ -22,17 +21,17 @@ block asidepanel
                 a.text-dark(id="aside-register", href="#", data-bs-toggle="modal", data-bs-target="#registerModal") ¿No estás registrado? Regístrate aquí.
 
     else
-        h3 Bienvenido, #{usuario.nombre}
+        h3 Hola, #{usuario.nombre}
         ul.list-group.my-3.fs-4
             li.list-group-item
-                a(href="") Mi Cuenta
+                a.text-dark.text-decoration-none(href="/miCuenta") Mi Cuenta
             li.list-group-item
-                a(href="") Mis Perros
+                a.text-dark.text-decoration-none(href="/misPerros") Mis Perros
             li.list-group-item
-                a(href="") Inscribir Perro en Exposición
+                a.text-dark.text-decoration-none(href="/inscribirPerro") Inscribir Perro en Exposición
             li.list-group-item
-                a(href="") Mis Inscripciones y Pagos
+                a.text-dark.text-decoration-none(href="/misInscripciones") Mis Inscripciones y Pagos
             li.list-group-item
-                a(href="") Dorsales
+                a.text-dark.text-decoration-none(href="/dorsales") Dorsales
         form(action="/logout" method="POST")
             button.btn.btn-warning(type='submit') Cerrar Sesión

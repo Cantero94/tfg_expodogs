@@ -249,27 +249,23 @@ const loginUsuario = async (req, res) => {
     try {
         const { email, password } = req.body;
         let errores = [];
-        // No hay datos
+
         if (!email || !password) {
             errores.push("Correo y contraseña son obligatorios.");
-        // Hay datos incorrectos
         } else {
             const usuario = await Usuario.findOne({ where: { email } });
-            // No existe
+
             if (!usuario) {
                 errores.push("El correo no está registrado.");
-            // No está activado	
             } else if (!usuario.activo) {
                 errores.push("Tu cuenta aún no está activada. Revisa tu correo.");
-            // Está baneado
             } else if (usuario.baneado) {
                 errores.push("Tu cuenta ha sido bloqueada.");
-            // Contraseña incorrecta
             } else {
                 const passwordMatch = await bcrypt.compare(password, usuario.password);
                 if (!passwordMatch) {
                     errores.push("Contraseña incorrecta.");
-                } else { //Si todo está correcto iniciamos sesión
+                } else {
                     console.log("✅ Usuario autenticado:", usuario.email);
                     req.session.usuario = {
                         id: usuario.id_usuario,
@@ -278,12 +274,12 @@ const loginUsuario = async (req, res) => {
                     };
                 }
             }
-        } 
-        
+        }
+
         if (errores.length > 0) {
             return res.status(400).json({ errores });
         }
-        
+
         console.log("📌 Sesión guardada:", req.session.usuario);
         return res.status(200).json({ mensaje: "Inicio de sesión exitoso" });
 
@@ -292,6 +288,7 @@ const loginUsuario = async (req, res) => {
         return res.status(500).json({ errores: ["Error en el servidor. Inténtalo nuevamente."] });
     }
 };
+
 
 const logoutUsuario = (req, res) => {
     req.session.destroy((err) => {

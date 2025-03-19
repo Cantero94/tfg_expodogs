@@ -1,0 +1,23 @@
+extends layout/layout
+
+block content
+  .container.mt-5
+    h1 Mis Perros
+
+    if Object.keys(perrosPorRaza).length
+      each perros, raza in perrosPorRaza
+        .raza-container
+          h3 Raza: #{raza}
+          each perro in perros
+            .perro-item.d-flex.justify-content-between.align-items-center
+              span.perro-nombre #{perro.nombre} (#{perro.sexo})
+              a.btn.btn-dark.btn-sm(href=`/editarPerro/${perro.id_perro}`) Editar
+
+    else
+      .alert.alert-info.text-center No tienes perros registrados.
+
+    .text-center.mt-4
+      a.btn.btn-success(href="/agregarPerro") Añadir Perro
+
+block asidepanel
+    include asidePanel
