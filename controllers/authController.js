@@ -198,7 +198,7 @@ const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
             <h1 style="text-align: center;">Hola, ${nombre}</h1>
             <div style="padding: 0px 20px; text-align: center;">
             <p style="text-align: left;">Gracias por registrarte en Expodogs. Para activar tu cuenta, haz clic en el siguiente enlace:</p>
-            <a href="http://localhost:4000/verificar-cuenta?token=${tokenVerificacion}"
+            <a href="https://tfg-expodogs.onrender.com/verificar-cuenta?token=${tokenVerificacion}" 
             style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             Activar mi cuenta
             </a>
@@ -364,7 +364,7 @@ const enviarCorreoRestablecer = async (email, nombre, token) => {
             <div style="padding: 0px 20px; text-align: center;">
             <p style="text-align: left;">Hemos recibido una solicitud para restablecer tu contraseña. 
             Si no has solicitado esto, ignora este correo. Para continuar, haz clic en el siguiente enlace:</p>
-            <a href="http://localhost:4000/restablecer-password?token=${token}"
+            <a href="https://tfg-expodogs.onrender.com/restablecer-password?token=${token}"
             style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             Restablecer contraseña
             </a>
