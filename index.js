@@ -3,6 +3,12 @@ import router from './routers/routers.js';
 import db from './config/db.js';
 import session from "express-session";
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+
+
+
 const app = express();
 
 app.use(session({
@@ -16,8 +22,10 @@ db.authenticate()
     .then( ()=> console.log('Conectado a la base de datos') )
     .catch( err => console.log(err) );
 
-const port = process.env.PORT || 4000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+app.set('views', path.join(__dirname, 'views'));  // Apunta a la carpeta 'views'
 app.set('view engine', 'pug');
 
 app.use((req, res, next) => {
@@ -34,4 +42,5 @@ app.use(express.static('public'));
 
 app.use('/', router);
 
+const port = process.env.PORT || 4000;
 app.listen(port, () => {console.log(`Servidor corriendo en: http://localhost:${port}`)});
