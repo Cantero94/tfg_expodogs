@@ -33,7 +33,7 @@ const paginaInicio = async (req, res) => {
         req.session.usuarioIntento = "";
         req.session.mensaje = "";
 
-        res.render("paginainicio", {
+        res.render("paginaInicio", {
             pagina: "Inicio",
             exposiciones,
             usuario: req.session.usuario || null,
