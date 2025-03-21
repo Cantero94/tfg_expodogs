@@ -9,7 +9,7 @@ app.use(session({
     secret: "expodogs-secret", // Cambiar luego esto para ponerla en .env
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Usa true solo si estás en HTTPS
+    cookie: { secure: true } // Usa true solo si estás en HTTPS
 }));
 
 db.authenticate()
