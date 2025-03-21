@@ -29,6 +29,9 @@ export const Inscripcion = db.define(
       allowNull: false,
       defaultValue: "pendiente",
     },
+    tarifa_aplicada: {
+      type: DataTypes.STRING 
+    },
   },
   {
     tableName: "inscripciones", timestamps: true

@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmCheck = document.getElementById("confirmCheck");
     const inscribirBtn = document.getElementById("inscribirBtn");
     const toggleAll = document.getElementById("toggleAll");
+    const mensajeModal = new bootstrap.Modal(document.getElementById('mensajeModal'));
+    const mensajeTitulo = document.getElementById("mensajeTitulo");
+    const mensajeTexto = document.getElementById("mensajeTexto");
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const modalErrorList = document.getElementById('modalErrorList');
   
     let allExpanded = false;
   
@@ -39,12 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
               <span><b>${p.nombre}</b></span>
             </label>
             <div class="d-flex align-items-center">
+            ${p.inscrito ? `<span class="badge bg-success ms-2">Ya inscrito</span>` : ""}
               <select class="form-select form-select-sm ms-2" name="clase" disabled
                 data-id="${p.id_perro}" ${p.inscrito ? "disabled" : ""}>
                 <option value="">Seleccionar clase</option>
                 ${clases.map(c => `<option ${p.clase === c ? "selected" : ""}>${c}</option>`).join("")}
               </select>
-              ${p.inscrito ? `<span class="badge bg-secondary ms-2">Ya inscrito</span>` : ""}
             </div>
           </div>
         `).join("");
@@ -125,8 +130,26 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ expoId, perros })
       });
   
-      if (res.ok) location.reload();
-      else alert("❌ Error al inscribir perros");
+      if (res.ok) {
+        const result = await res.json();
+      
+        mensajeTitulo.textContent = "Inscripción completada!";
+        mensajeTexto.textContent = `Inscripción registrada con éxito, pero su estado de pago está pediente. Código de pago: ${result.cod_pago} `;
+        mensajeModal.show();
+      
+        // Reset UI
+        select.value = "";
+        container.style.display = "none";
+        confirmCheck.checked = false;
+        inscribirBtn.disabled = true;
+      } else {
+        const result = await res.json();
+        modalErrorList.innerHTML = "";
+        const li = document.createElement("li");
+        li.textContent = result?.error || "❌ Error inesperado al inscribir perros.";
+        modalErrorList.appendChild(li);
+        errorModal.show();
+      }
     });
   });
   
