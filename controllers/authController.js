@@ -189,7 +189,7 @@ const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
             from: "jc.canterito@gmail.com",
             to: email,
             subject: "Confirma tu cuenta en Expodogs",
-            html: `
+/*             html: `
             <div style="font-family: Arial, sans-serif; width:50%; margin:0 auto;">
                 <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
                     <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
@@ -198,6 +198,21 @@ const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
                 <div style="padding: 0px 20px; text-align: center;">
                     <p style="text-align: left;">Gracias por registrarte en Expodogs. Para activar tu cuenta, haz clic en el siguiente enlace:</p>
                     <a href="http://localhost:4000/verificar-cuenta?token=${tokenVerificacion}" 
+                    style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                    Activar mi cuenta
+                    </a>
+                </div>
+            </div>
+            `, */
+            html: `
+            <div style="font-family: Arial, sans-serif; width:50%; margin:0 auto;">
+                <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
+                    <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
+                </div>
+                <h1 style="text-align: center;">Hola, ${nombre}</h1>
+                <div style="padding: 0px 20px; text-align: center;">
+                    <p style="text-align: left;">Gracias por registrarte en Expodogs. Para activar tu cuenta, haz clic en el siguiente enlace:</p>
+                    <a href="https://tfg-expodogs.onrender.com/verificar-cuenta?token=${tokenVerificacion}" 
                     style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
                     Activar mi cuenta
                     </a>
@@ -351,7 +366,7 @@ const enviarCorreoRestablecer = async (email, nombre, token) => {
             from: "jc.canterito@gmail.com",
             to: email,
             subject: "Restablecimiento de contraseña en Expodogs",
-            html: `
+/*             html: `
             <div style="font-family: Arial, sans-serif; width:50%; margin:0 auto;">
                 <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
                     <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
@@ -361,6 +376,22 @@ const enviarCorreoRestablecer = async (email, nombre, token) => {
                     <p style="text-align: left;">Hemos recibido una solicitud para restablecer tu contraseña. 
                     Si no has solicitado esto, ignora este correo. Para continuar, haz clic en el siguiente enlace:</p>
                     <a href="http://localhost:4000/restablecer-password?token=${token}" 
+                    style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                    Restablecer contraseña
+                    </a>
+                </div>
+            </div>
+            `, */
+            html: `
+            <div style="font-family: Arial, sans-serif; width:50%; margin:0 auto;">
+                <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
+                    <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
+                </div>
+                <h1 style="text-align: center;">Hola, ${nombre}</h1>
+                <div style="padding: 0px 20px; text-align: center;">
+                    <p style="text-align: left;">Hemos recibido una solicitud para restablecer tu contraseña. 
+                    Si no has solicitado esto, ignora este correo. Para continuar, haz clic en el siguiente enlace:</p>
+                    <a href="https://tfg-expodogs.onrender.com/restablecer-password?token=${token}" 
                     style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
                     Restablecer contraseña
                     </a>
