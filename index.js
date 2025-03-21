@@ -2,6 +2,8 @@ import express from 'express';
 import router from './routers/routers.js';
 import db from './config/db.js';
 import session from "express-session";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 
@@ -18,6 +20,10 @@ db.authenticate()
 
 const port = process.env.PORT || 4000;
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use((req, res, next) => {
@@ -34,3 +40,5 @@ app.use(express.static('public'));
 app.use('/', router);
 
 app.listen(port, () => {console.log(`Servidor corriendo en: http://localhost:${port}`)});
+
+//"start": "node --watch index.js"

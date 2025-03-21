@@ -13,14 +13,14 @@ dotenv.config();
 const paginaInicio = async (req, res) => {
     try {
         //const exposiciones = await Exposicion.findAll({ order: [["fecha", "DESC"]] });
-
-        const hoy = moment().format("YYYY-MM-DD"); // Obtener la fecha actual en formato YYYY-MM-DD
-
+        
+        // Obtener solo exposiciones próximas para carrusell
+        const hoy = moment().format("YYYY-MM-DD");
         const exposiciones = await Exposicion.findAll({
             where: {
-                fecha: { [Op.gt]: hoy } // Filtrar solo exposiciones futuras
+                fecha: { [Op.gt]: hoy } // Operador de Sequelize mayor que, gt=GreateThan
             },
-            order: [["fecha", "ASC"]] // Ordenar de la más cercana a la más lejana
+            order: [["fecha", "ASC"]]
         });
 
         const errores = req.session.errores || [];
@@ -61,11 +61,11 @@ const registrarUsuario = async (req, res) => {
             return res.status(400).json({ error: errorValidacion });
         }
 
-        // Verificar si el usuario ya existe
+        // Verificar si el usuario ya existe, despues de validar los datos
         const usuarioExistente = await Usuario.findOne({ where: { email } });
         if (usuarioExistente) {
             console.log("❌ Error: El correo ya está registrado.");
-            return res.status(400).json({ error: "BCK: Error: El correo ya está registrado. Si no recuerda su contraseña puede recuperarla haciendo click en '¿Olvidaste tu contraseña?'" });
+            return res.status(400).json({ error: "BCK: El correo ya está registrado. Si no recuerda su contraseña puede recuperarla haciendo click en '¿Olvidaste tu contraseña?'" });
         }
 
         // Hashear la contraseña
