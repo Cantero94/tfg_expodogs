@@ -42,7 +42,6 @@ block content
           th Ámbito
           th Fecha
           th 1º Plazo
-          th 2º Plazo
           th Entidad Organizadora
 
       tbody#expoTableBody
@@ -55,7 +54,6 @@ block content
             td= exposicion.ambito
             td= moment(exposicion.fecha).format("YYYY-MM-DD")
             td= exposicion.plazo1_inicio + " - " + exposicion.plazo1_fin
-            td= exposicion.plazo2_inicio ? exposicion.plazo2_inicio + " - " + exposicion.plazo2_fin : "-"
             td= exposicion.entidad_organizadora
 
     // Paginación
