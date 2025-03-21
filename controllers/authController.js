@@ -1,20 +1,27 @@
 import { Exposicion } from "../models/Exposicion.js";
 import { Usuario } from "../models/Usuario.js";
-import { Perro } from "../models/Perro.js";
-import { Inscripcion } from "../models/Inscripcion.js";
 
 import bcrypt from "bcrypt";
 import moment from "moment";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import e from "express";
+import { Op } from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
 
 // Página de inicio
 const paginaInicio = async (req, res) => {
     try {
-        const exposiciones = await Exposicion.findAll({ order: [["fecha", "DESC"]] });
+        //const exposiciones = await Exposicion.findAll({ order: [["fecha", "DESC"]] });
+
+        const hoy = moment().format("YYYY-MM-DD"); // Obtener la fecha actual en formato YYYY-MM-DD
+
+        const exposiciones = await Exposicion.findAll({
+            where: {
+                fecha: { [Op.gt]: hoy } // Filtrar solo exposiciones futuras
+            },
+            order: [["fecha", "ASC"]] // Ordenar de la más cercana a la más lejana
+        });
 
         const errores = req.session.errores || [];
         const erroresLogin = req.session.erroresLogin || [];

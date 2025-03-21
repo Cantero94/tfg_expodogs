@@ -2,7 +2,7 @@ extends layout/layout
 block content
     include layout/welcome
     .container
-        h1.text-center.my-4 Exposiciones
+        h1.text-center.my-4 Próximas Exposiciones
 
         // Mixin para una tarjeta individual
         mixin card(exposicion)
@@ -12,7 +12,7 @@ block content
                     .card-body.text-center.d-flex.flex-column.justify-content-between
                         h5.card-title= exposicion.nombre
                         p.card-text= exposicion.fecha
-                        a.btn.btn-dark.mt-auto(href="#") Más Información
+                        //- a.btn.btn-dark.mt-auto(href="#") Más Información
 
         // Mixin para el carrusel de exposiciones
         mixin carousel(exposiciones)

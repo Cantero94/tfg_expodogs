@@ -15,6 +15,10 @@ import {
     misPerros
 } from "../controllers/userController.js";
 
+import {
+    vistaExposiciones,
+} from "../controllers/expoController.js";
+
 const router = express.Router();
 
 router.get("/", paginaInicio);
@@ -29,5 +33,8 @@ router.get("/restablecer-password", restablecerPassword);
 router.get("/miCuenta", mostrarCuenta);
 router.post("/actualizarCuenta", actualizarCuenta);
 router.get("/misPerros", misPerros);
+
+
+router.get("/exposiciones", vistaExposiciones);
 
 export default router;

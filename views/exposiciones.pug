@@ -1,0 +1,83 @@
+extends layout/layout
+
+block content
+  .container.mt-4
+    h1.text-center Exposiciones
+
+    // Barra de búsqueda y filtros
+    .row.mb-3
+      .col-md-3
+        input.form-control#search(type="text" placeholder="Buscar exposiciones por...")
+
+      .col-md-3
+        select.form-select#filterOrganizador
+          option(value="") Entidad Organizadora
+          each entidad in entidadesUnicas
+            option(value=entidad)= entidad
+
+      .col-md-2
+        input.form-control#filterYear(type="number" placeholder="Año" min="2000" max="2050")
+
+      .col-md-2
+        select.form-select#itemsPerPage
+          option(value="5") 5
+          option(value="10") 10
+          option(value="20") 20
+          option(value="50") 50
+          option(value="100") 100
+
+
+
+      .col-md-2.d-flex.gap-2
+        button.btn.btn-dark.w-100#clearFilters Limpiar Filtros
+        button.btn.btn-warning.w-100#searchButton Buscar
+
+    // Tabla de exposiciones
+    table.table.table-striped.table-hover
+      thead
+        tr
+          th Cartel
+          th Nombre
+          th Tipo
+          th Ámbito
+          th Fecha
+          th 1º Plazo
+          th 2º Plazo
+          th Entidad Organizadora
+
+      tbody#expoTableBody
+        each exposicion in exposiciones
+          tr
+            td 
+              img(src=exposicion.cartel alt="Cartel" style="width: 80px; height: auto;")
+            td= exposicion.nombre
+            td= exposicion.tipo
+            td= exposicion.ambito
+            td= moment(exposicion.fecha).format("YYYY-MM-DD")
+            td= exposicion.plazo1_inicio + " - " + exposicion.plazo1_fin
+            td= exposicion.plazo2_inicio ? exposicion.plazo2_inicio + " - " + exposicion.plazo2_fin : "-"
+            td= exposicion.entidad_organizadora
+
+    // Paginación
+    .pagination.justify-content-center.mt-4
+      if totalPages > 1
+        nav
+          ul.pagination
+            li.page-item(class=(currentPage === 1 ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=1&limit=${limit}`) « Primera
+
+            li.page-item(class=(currentPage === 1 ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=${currentPage - 1}&limit=${limit}`) ‹ Anterior
+
+            each page in Array(totalPages).fill().map((_, i) => i + 1)
+              li.page-item(class=(currentPage === page ? "active" : ""))
+                a.page-link(href=`/exposiciones?page=${page}&limit=${limit}`)= page
+
+            li.page-item(class=(currentPage === totalPages ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=${currentPage + 1}&limit=${limit}`) Siguiente ›
+
+            li.page-item(class=(currentPage === totalPages ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=${totalPages}&limit=${limit}`) Última »
+
+block asidepanel
+    include asidePanel

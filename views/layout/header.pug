@@ -9,10 +9,12 @@ header
             div.collapse.navbar-collapse(id="navbarNav")
                 ul.navbar-nav.w-100
                     li.nav-item.ms-lg-auto
-                        a.nav-link(id="nav-inicio", href="/") Próximas Exposiciones
+                        a.nav-link(id="nav-inicio", href="/") Inicio
                     li.nav-item
+                        a.nav-link(id="nav-inicio", href="/exposiciones") Exposiciones
+                    //- li.nav-item
                         a.nav-link(id="nav-nosotros", href="/exposiciones-pasadas") Exposiciones Pasadas
-                    li.nav-item
+                    //- li.nav-item
                         a.nav-link(id="nav-contacto", href="/contacto") Contacto
                     li.nav-item.d-xxl-none
                         if !usuario
@@ -29,7 +31,7 @@ header
                                         a.dropdown-item(href="/inscribirPerro") Inscribir Perro en Exposición
                                     li
                                         a.dropdown-item(href="/misInscripciones") Mis Inscripciones y Pagos
-                                    li
+                                    //- li
                                         a.dropdown-item(href="/dorsales") Dorsales
                                     div.text-center.mt-1
                                         form(action="/logout" method="POST")
