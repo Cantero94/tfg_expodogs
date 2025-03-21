@@ -1,0 +1,29 @@
+extends layout/layout
+
+block content
+  .container.mt-5.w-75
+    h1 Inscribir Perro en Exposición
+
+    .mb-4
+      label(for="selectExposicion") Selecciona una exposición:
+      select#selectExposicion.form-select
+        option(value="") -- Selecciona una exposición --
+        each expo in exposiciones
+          option(value=expo.id_exposicion)= expo.nombre
+
+    #perrosContainer.mt-4(style="display: none;")
+      .text-end.mb-2
+        button.btn.btn-secondary#toggleAll Expandir Todas
+
+      .accordion.bg-light#accordionPerros
+
+      .mt-4
+        .form-check
+          input.form-check-input#confirmCheck(type="checkbox")
+          label.form-check-label(for="confirmCheck") Confirmo que deseo inscribir los perros seleccionados.
+
+        .text-center.mt-3
+          button.btn.btn-warning#inscribirBtn(disabled) Inscribir Perros
+
+block asidepanel
+  include asidePanel

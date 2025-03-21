@@ -16,6 +16,12 @@ import {
 } from "../controllers/userController.js";
 
 import {
+    vistaInscribirPerro, 
+    obtenerPerrosParaInscripcion, 
+    inscribirPerros
+} from "../controllers/inscripcionController.js";
+
+import {
     vistaExposiciones,
 } from "../controllers/expoController.js";
 
@@ -36,5 +42,9 @@ router.get("/misPerros", misPerros);
 
 
 router.get("/exposiciones", vistaExposiciones);
+
+router.get("/inscribirPerro", vistaInscribirPerro);
+router.get("/obtenerPerrosParaInscripcion", obtenerPerrosParaInscripcion);
+router.post("/inscribirPerros", inscribirPerros);
 
 export default router;

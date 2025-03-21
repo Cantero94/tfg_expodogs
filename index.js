@@ -3,11 +3,8 @@ import router from './routers/routers.js';
 import db from './config/db.js';
 import session from "express-session";
 
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-
-
+// import path from 'path';
+// import { fileURLToPath } from 'url';
 
 const app = express();
 
@@ -19,13 +16,13 @@ app.use(session({
 }));
 
 db.authenticate()
-    .then( ()=> console.log('Conectado a la base de datos') )
-    .catch( err => console.log(err) );
+    .then(()=> console.log('Conectado a la base de datos'))
+    .catch(err => console.log(err));
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
-app.set('views', path.join(__dirname, 'views'));  // Apunta a la carpeta 'views'
+// app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use((req, res, next) => {

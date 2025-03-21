@@ -20,4 +20,4 @@ export const Exposicion = db.define("exposicion", {
   plazo2_inicio: { type: DataTypes.STRING },
   precio_inscripcion: { type: DataTypes.DOUBLE },
   tipo: { type: DataTypes.STRING },
-}, { tableName: "exposiciones", timestamps: false });
+}, { tableName: "exposicion", timestamps: true });

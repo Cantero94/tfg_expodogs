@@ -4,15 +4,38 @@ import { Exposicion } from "./Exposicion.js";
 import { Perro } from "./Perro.js";
 import { Usuario } from "./Usuario.js";
 
-export const Inscripcion = db.define("inscripcion", {
-  id_inscripcion: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-  clase: { type: DataTypes.STRING },
-  cod_pago: { type: DataTypes.STRING, allowNull: false },
-  fecha_inscripcion: { type: DataTypes.STRING },
-  precio: { type: DataTypes.DOUBLE },
-  estado: { type: DataTypes.STRING },
-}, { tableName: "inscripciones", timestamps: false });
+export const Inscripcion = db.define(
+  "inscripcion",
+  {
+    id_inscripcion: {
+      type: DataTypes.BIGINT,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    clase: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    cod_pago: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    precio: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    estado: {
+      type: DataTypes.ENUM("pendiente", "pagado", "cancelado"),
+      allowNull: false,
+      defaultValue: "pendiente",
+    },
+  },
+  {
+    tableName: "inscripciones", timestamps: true
+  }
+);
 
-Inscripcion.belongsTo(Exposicion, { foreignKey: "id_exposicion" });
-Inscripcion.belongsTo(Perro, { foreignKey: "id_perro" });
-Inscripcion.belongsTo(Usuario, { foreignKey: "id_usuario" });
+// Definir relaciones
+Inscripcion.belongsTo(Exposicion, { foreignKey: "id_exposicion", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Inscripcion.belongsTo(Perro, { foreignKey: "id_perro", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Inscripcion.belongsTo(Usuario, { foreignKey: "id_usuario", onDelete: "CASCADE", onUpdate: "CASCADE" });
