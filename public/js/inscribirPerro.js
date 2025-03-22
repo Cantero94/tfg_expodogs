@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!expoId) return (container.style.display = "none");
   
       const res = await fetch(`/obtenerPerrosParaInscripcion?expoId=${expoId}`);
-      const perros = await res.json();
+      const perros = await res.json(); // Lee la repuesta JSON con perrosInscritos
   
       const agrupados = perros.reduce((acc, perro) => {
         (acc[perro.raza] = acc[perro.raza] || []).push(perro);
@@ -116,43 +116,57 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
     inscribirBtn.addEventListener("click", async () => {
-      const expoId = select.value;
-      const perros = Array.from(document.querySelectorAll('input[name="perrosSeleccionados"]:checked')).map(cb => {
-        const select = document.querySelector(`select[data-id="${cb.value}"]`);
-        return {
-          id_perro: cb.value,
-          clase: select.value,
-          raza: cb.dataset.raza
-        };
-      });
-  
-      const res = await fetch("/inscribirPerros", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expoId, perros })
-      });
-  
-      if (res.ok) {
-        const result = await res.json();
+      inscribirBtn.disabled = true;
+      inscribirBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Procesando...`;
       
-        mensajeTitulo.textContent = "Inscripción completada!";
-        mensajeTexto.textContent = `Inscripción registrada con éxito, pero su estado de pago está pediente. Código de pago: ${result.cod_pago} `;
-        mensajeModal.show();
-      
-        // Reset UI
-        select.value = "";
-        container.style.display = "none";
-        confirmCheck.checked = false;
-        inscribirBtn.disabled = true;
-      } else {
-        const result = await res.json();
+      const showError = (mensaje) => {
         modalErrorList.innerHTML = "";
         const li = document.createElement("li");
-        li.textContent = result?.error || "❌ Error inesperado al inscribir perros.";
+        li.textContent = mensaje;
         modalErrorList.appendChild(li);
         errorModal.show();
+      };
+
+      try {
+        const expoId = select.value;
+        const perros = Array.from(document.querySelectorAll('input[name="perrosSeleccionados"]:checked')).map(cb => {
+          const select = document.querySelector(`select[data-id="${cb.value}"]`);
+          return {
+            id_perro: cb.value,
+            clase: select.value,
+            raza: cb.dataset.raza
+          };
+        });
+    
+        const res = await fetch("/inscribirPerros", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ expoId, perros })
+        });
+    
+        if (res.ok) { // res.status === 200 OK
+          const result = await res.json();
+    
+          mensajeTitulo.textContent = "Inscripción completada!";
+          mensajeTexto.textContent = `Inscripción registrada con éxito, pero su estado de pago está pendiente. Código de pago: ${result.cod_pago}`;
+          mensajeModal.show();
+    
+          // Reset UI
+          select.value = "";
+          container.style.display = "none";
+          confirmCheck.checked = false;
+        } else {
+          const result = await res.json();
+          showError(result?.error || "❌ Error inesperado al inscribir perros.");
+        }
+      } catch (err) {
+        showError("❌ Se produjo un error de red. Inténtalo de nuevo.");
+      } finally {
+        inscribirBtn.innerHTML = "Inscribir";
+        updateBtn(); // decide si debe volver a habilitarse o no
       }
     });
+    
     if (select.value) {
       select.dispatchEvent(new Event("change"));
     }

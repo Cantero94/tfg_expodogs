@@ -9,10 +9,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensajeTitulo = document.getElementById("mensajeTitulo");
     const mensajeTexto = document.getElementById("mensajeTexto");
 
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault(); // 🔹 Evitar la recarga de la página
+    const rememberBtn = document.getElementById('rememberBtn');
+    let estaRecordando = false;
 
-        emailError.textContent = ""; // 🔹 Limpiar mensajes anteriores
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (estaRecordando) return; // ⚠️ Evita doble envío
+        estaRecordando = true;
+        rememberBtn.disabled = true;
+        rememberBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Procesando...`;
+
+        emailError.textContent = "";
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
@@ -46,6 +54,10 @@ document.addEventListener("DOMContentLoaded", function () {
             
         } catch (error) {
             emailError.textContent = "❌ Error de conexión. Inténtalo nuevamente.";
+        } finally {
+            estaRecordando = false;
+            rememberBtn.innerHTML = "Enviar correo electrónico";
+            rememberBtn.disabled = false;
         }
     });
 });

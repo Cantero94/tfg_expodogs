@@ -10,43 +10,79 @@ const __dirname = path.dirname(__filename);
 export const generarPDFInscripcion = (
   usuario,
   exposicion,
-  cod_pago,
+  pago,
   perros,
   inscripciones
 ) => {
+  const cod_pago = pago.cod_pago;
+
   const filePath = path.join(
     __dirname,
     `../public/pdf/proforma_${cod_pago}.pdf`
   );
+
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
 
   const doc = new PDFDocument({
     size: "A4",
-    margins: { top: 50, left: 50, right: 50, bottom: 50 },
+    margins: { top: 40, left: 50, right: 50, bottom: 80 },
   });
-  const stream = fs.createWriteStream(filePath);
-  doc.pipe(stream);
 
-  // **🔹 Logo a la izquierda, empresa a la derecha**
-  doc.image("public/img/logonegro.png", 50, 50, { width: 100 }); // Logo en la parte superior izquierda
+  const stream = fs.createWriteStream(filePath);
+
+  doc.pipe(stream); // Empieza a escribir en el archivo pdf
+
+  // Añadimos un pie de página a cada página con el número de página
+  let currentPage = 1;
+  const addFooter = () => {
+    const bottom = doc.page.height - doc.page.margins.bottom + 40;
+
+    doc.save();
+
+    doc
+      .fontSize(9)
+      .fillColor("black")
+      .text(
+        "Este documento no tiene validez fiscal. Sirve como confirmación de inscripción.",
+        50,
+        bottom,
+        { lineBreak: false }
+      )
+      .text(`Página ${currentPage}`, doc.page.width - 100, bottom, {
+        lineBreak: false,
+      });
+
+    doc.restore();
+    currentPage++;
+  };
+
+  // Footer para la primera página
+  addFooter();
+
+  // Footer para cada nueva página
+  doc.on("pageAdded", () => {
+    setImmediate(() => {
+      addFooter();
+    });
+  });
+
+  doc.image("public/img/logonegro.png", 50, 40, { width: 100 });
   doc
     .fontSize(10)
-    .text("Gestión Integral de Exposiciones S.L.", 400, 50, { align: "right" })
+    .text("Gestión Integral de Exposiciones S.L.", 400, 40, { align: "right" })
     .text("CIF: B73927816", { align: "right" })
     .text("Avenida Primero de Mayo, 24 1º", { align: "right" })
     .text("30420, Calasparra - Murcia", { align: "right" });
   doc.moveDown();
-  // **🔹 Título en el centro**
+
   doc
     .fontSize(16)
     .fillColor("#000")
-    .text("FACTURA PROFORMA", 0, 130, { align: "center", bold: true });
+    .text("FACTURA PROFORMA", 0, 120, { align: "center", bold: true });
 
-  // **📌 A partir de aquí, agregamos márgenes manualmente**
-  const marginLeft = 60; // Definimos margen izquierdo
+  const marginLeft = 60;
 
-  // **🔹 Datos del cliente**
-  doc.moveDown(4);
+  doc.moveDown();
   doc
     .fontSize(11)
     .fillColor("#000")
@@ -59,13 +95,20 @@ export const generarPDFInscripcion = (
   doc.text(`Teléfono: ${usuario.telefono1}`, marginLeft);
   doc.text(`Email: ${usuario.email}`, marginLeft);
 
-  // **🔹 Datos de la exposición**
-  doc.moveDown(2);
+  doc.moveDown();
   doc.fontSize(11).text(`Exposición: ${exposicion.nombre}`, marginLeft);
-  doc.text(`Fecha: ${new Date().toLocaleDateString()}`, marginLeft);
+  doc.text(
+    `Fecha de inscripción: ${new Date(pago.createdAt).toLocaleDateString()}`,
+    marginLeft
+  );
+  if (pago.fecha_pago) {
+    doc.text(
+      `Fecha de pago: ${new Date(pago.fecha_pago).toLocaleDateString()}`,
+      marginLeft
+    );
+  }
   doc.text(`Código de Pago: ${cod_pago}`, marginLeft);
 
-  // **🔹 Línea divisoria**
   doc.moveDown();
   doc
     .strokeColor("#aaaaaa")
@@ -75,27 +118,59 @@ export const generarPDFInscripcion = (
     .stroke();
   doc.moveDown();
 
-  // **🔹 Tabla de inscripción**
   doc
     .font("Helvetica-Bold")
     .text("Detalles de inscripción:", marginLeft, doc.y, { underline: true });
   doc.moveDown(0.5);
 
-  perros.forEach((p, idx) => {
-    const insc = inscripciones.find((i) => i.id_perro === p.id_perro);
-    doc
-      .font("Helvetica-Bold")
-      .text(`· ${p.nombre}`, marginLeft, doc.y, { continued: true })
-      .font("Helvetica")
-      .text(` (Microchip: ${p.microchip})`);
-    doc.text(`  Libro: ${p.libro}-${p.numero_libro}`, marginLeft);
-    doc.text(`  Clase: ${insc.clase} - Sexo: ${p.sexo}`, marginLeft);
-    doc.text(`  Tarifa aplicada: ${insc.tarifa_aplicada}`, marginLeft);
-    doc.text(`  Precio: ${insc.precio.toFixed(2)} €`, marginLeft);
-    doc.moveDown(0.5);
+  const subtotales = {};
+
+  // Agrupar perros por raza
+  const perrosPorRaza = {};
+  perros.forEach((p) => {
+    if (!perrosPorRaza[p.raza]) {
+      perrosPorRaza[p.raza] = [];
+    }
+    perrosPorRaza[p.raza].push(p);
   });
 
-  // **🔹 Línea divisoria final**
+  // Iterar por cada raza
+  Object.entries(perrosPorRaza).forEach(([raza, grupo]) => {
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(11)
+      .text(`Raza: ${raza}`, marginLeft);
+    doc.moveDown(0.3);
+
+    grupo.forEach((p) => {
+      const insc = inscripciones.find((i) => i.id_perro === p.id_perro);
+      if (!subtotales[insc.tarifa_aplicada]) {
+        subtotales[insc.tarifa_aplicada] = 0;
+      }
+      subtotales[insc.tarifa_aplicada] += insc.precio;
+
+      doc
+        .fontSize(10)
+        .font("Helvetica-Bold")
+        .text(`· ${p.nombre}`, marginLeft * 1.25);
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .text(
+          `  Microchip: ${p.microchip}     Libro: ${p.libro}-${p.numero_libro}`,
+          marginLeft * 1.5
+        );
+      doc.text(`  Clase: ${insc.clase} ${p.sexo}s`, marginLeft * 1.5);
+      doc.text(
+        `  Precio: ${insc.precio.toFixed(2)}€ (${insc.tarifa_aplicada})`,
+        marginLeft * 1.5
+      );
+      doc.moveDown(0.5);
+    });
+
+    doc.moveDown(1);
+  });
+
   doc.moveDown();
   doc
     .strokeColor("#aaaaaa")
@@ -105,22 +180,34 @@ export const generarPDFInscripcion = (
     .stroke();
   doc.moveDown();
 
-  // **🔹 Estado de pago en grande**
   doc
-    .fontSize(16)
-    .fillColor("#FF0000")
-    .text("PENDIENTE DE PAGO", 0, doc.y + 20, { align: "center" });
-  doc.moveDown(4);
-  // **🔹 Nota final pegada al borde inferior**
+    .fontSize(10)
+    .font("Helvetica-Bold")
+    .text("Resumen por tarifa:", marginLeft);
+  for (const [tarifa, total] of Object.entries(subtotales)) {
+    const cantidadPerros = inscripciones.filter(
+      (insc) => insc.tarifa_aplicada === tarifa
+    ).length;
+    doc
+      .font("Helvetica")
+      .text(
+        `- ${tarifa}: (x${cantidadPerros}) ${total.toFixed(2)} €`,
+        marginLeft * 1.25
+      );
+  }
+  doc.moveDown();
   doc
-    .fillColor("#000")
-    .fontSize(9)
-    .text(
-      "Este documento no tiene validez fiscal. Sirve como confirmación de inscripción.",
-      {
-        align: "center",
-      }
-    );
+    .fontSize(12)
+    .font("Helvetica-Bold")
+    .text(`Importe total: ${pago.total}€`, marginLeft);
+  doc.moveDown();
+
+  doc.fontSize(16).fillColor("#FF0000");
+  if (pago.estado === "pendiente") {
+    doc.text("PENDIENTE DE PAGO", 0, doc.y, { align: "center" });
+  } else {
+    doc.text(pago.estado.toUpperCase(), 0, doc.y + 20, { align: "center" });
+  }
 
   doc.end();
 

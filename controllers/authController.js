@@ -92,12 +92,10 @@ const registrarUsuario = async (req, res) => {
     const usuarioExistente = await Usuario.findOne({ where: { email } });
     if (usuarioExistente) {
       console.log("❌ Error: El correo ya está registrado.");
-      return res
-        .status(400)
-        .json({
-          error:
-            "BCK: El correo ya está registrado. Si no recuerda su contraseña puede recuperarla haciendo click en '¿Olvidaste tu contraseña?'",
-        });
+      return res.status(400).json({
+        error:
+          "BCK: El correo ya está registrado. Si no recuerda su contraseña puede recuperarla haciendo click en '¿Olvidaste tu contraseña?'",
+      });
     }
 
     // Hashear la contraseña
@@ -475,7 +473,7 @@ const restablecerPassword = async (req, res) => {
     }
 
     // Restablecer la contraseña a 123456 y activar la cuenta si no estaba activada
-    const hashedPassword = await bcrypt.hash("asdfgh", 10);
+    const hashedPassword = await bcrypt.hash("123456", 10);
     await Usuario.update(
       { password: hashedPassword, token_verificacion: null, activo: true },
       { where: { id_usuario: usuario.id_usuario } }

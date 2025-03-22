@@ -17,8 +17,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const mensajeTexto = document.getElementById("mensajeTexto");
     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
     const modalErrorList = document.getElementById('modalErrorList');
+    const registerBtn = document.getElementById('registerBtn');
+    let estaRegistrando = false;
 
     formRegistro.addEventListener('submit', async function (event) {
+        
+        if (estaRegistrando) return; // ⚠️ Evita doble envío
+        estaRegistrando = true;
+        registerBtn.disabled = true;
+        registerBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Procesando...`;
+        
         event.preventDefault();
 
         const formData = new FormData(formRegistro);
@@ -117,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const result = await response.json();
 
-            if (response.ok) {
+            if (response.ok) { // response.status === 200 OK
                 registerModal.hide();
                 mensajeTitulo.textContent = "Registro completado!";
                 mensajeTexto.textContent = "Hemos enviado un correo electrónico con un enlace para activar tu cuenta. Por favor, revisa tu bandeja de entrada.";
@@ -141,6 +149,10 @@ document.addEventListener('DOMContentLoaded', function () {
             li.textContent = "Error inesperado. Inténtalo nuevamente.";
             modalErrorList.appendChild(li);
             errorModal.show();
+        } finally {
+            estaRegistrando = false;
+            registerBtn.innerHTML = "Registrarme";
+            registerBtn.disabled = false;
         }
     });
 });

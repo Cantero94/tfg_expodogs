@@ -15,4 +15,4 @@ export const Perro = db.define("perro", {
   sexo: { type: DataTypes.STRING },
 }, { tableName: "perros", timestamps: true });
 
-Perro.belongsTo(Usuario, { foreignKey: "id_usuario" });
+

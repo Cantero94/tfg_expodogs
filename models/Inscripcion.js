@@ -3,6 +3,7 @@ import db from "../config/db.js";
 import { Exposicion } from "./Exposicion.js";
 import { Perro } from "./Perro.js";
 import { Usuario } from "./Usuario.js";
+import { CodPago } from "./CodPago.js";
 
 export const Inscripcion = db.define(
   "inscripcion",
@@ -16,18 +17,9 @@ export const Inscripcion = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    cod_pago: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     precio: {
       type: DataTypes.DOUBLE,
       allowNull: false,
-    },
-    estado: {
-      type: DataTypes.ENUM("pendiente", "pagado", "cancelado"),
-      allowNull: false,
-      defaultValue: "pendiente",
     },
     tarifa_aplicada: {
       type: DataTypes.STRING 
@@ -38,7 +30,3 @@ export const Inscripcion = db.define(
   }
 );
 
-// Definir relaciones
-Inscripcion.belongsTo(Exposicion, { foreignKey: "id_exposicion", onDelete: "CASCADE", onUpdate: "CASCADE" });
-Inscripcion.belongsTo(Perro, { foreignKey: "id_perro", onDelete: "CASCADE", onUpdate: "CASCADE" });
-Inscripcion.belongsTo(Usuario, { foreignKey: "id_usuario", onDelete: "CASCADE", onUpdate: "CASCADE" });

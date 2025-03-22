@@ -18,7 +18,7 @@ const db = new Sequelize(process.env.BASEDEDATOS, process.env.USUARIO, process.e
     },
 });
 
-/* db.sync({ force: false }) // ojo con poner force: true porque borra la base de datos...
+/* db.sync({ force: false }) // 👁️👁️ ojo con poner force: true porque borra la base de datos...
   .then(() => console.log("✔️ Base de datos sincronizada correctamente"))
   .catch((err) => console.error("❌ Error al sincronizar la base de datos:", err));
  */

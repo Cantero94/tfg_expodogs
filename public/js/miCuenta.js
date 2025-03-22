@@ -3,9 +3,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const mensajeModal = new bootstrap.Modal(document.getElementById('mensajeModal'));
     const mensajeTitulo = document.getElementById('mensajeTitulo');
     const mensajeTexto = document.getElementById('mensajeTexto');
+    const updateBtn = document.getElementById('updateBtn');
+    let estaActualizando = false;
 
     formActualizarCuenta.addEventListener('submit', async function (event) {
         event.preventDefault(); // Evita la recarga de la página
+        
+        if (estaActualizando) return; // ⚠️ Evita doble envío
+        estaActualizando = true;
+        updateBtn.disabled = true;
+        updateBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Procesando...`;
 
         const formData = new FormData(formActualizarCuenta);
         const data = Object.fromEntries(formData.entries());
@@ -106,8 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 mensajeTitulo.textContent = "¡Datos actualizados!";
                 mensajeTexto.textContent = "Tu información ha sido actualizada correctamente.";
                 mensajeModal.show();
-
-                setTimeout(() => window.location.reload(), 2000);
             } else {
                 mensajeTitulo.textContent = "Error al actualizar";
                 mensajeTexto.textContent = result.error;
@@ -117,6 +122,10 @@ document.addEventListener('DOMContentLoaded', function () {
             mensajeTitulo.textContent = "Error de conexión";
             mensajeTexto.textContent = "No se pudo conectar con el servidor. Inténtalo nuevamente.";
             mensajeModal.show();
+        } finally {
+            estaActualizando = false;
+            updateBtn.innerHTML = "Actualizar Datos";
+            updateBtn.disabled = false;
         }
     });
 });

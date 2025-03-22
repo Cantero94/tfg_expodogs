@@ -2,6 +2,8 @@ import express from 'express';
 import router from './routers/routers.js';
 import db from './config/db.js';
 import session from "express-session";
+import "./models/relaciones.js";
+
 
 const app = express();
 
