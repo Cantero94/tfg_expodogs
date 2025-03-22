@@ -1,3 +1,4 @@
+// models/Inscripcion.js
 import { DataTypes } from "sequelize";
 import db from "../config/db.js";
 import { Exposicion } from "./Exposicion.js";

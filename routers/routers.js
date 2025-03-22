@@ -18,7 +18,10 @@ import {
 import {
     vistaInscribirPerro, 
     obtenerPerrosParaInscripcion, 
-    inscribirPerros
+    inscribirPerros,
+    misInscripcionesYPagos,
+    generarPDF,
+    pagar
 } from "../controllers/inscripcionController.js";
 
 import {
@@ -43,9 +46,13 @@ router.get("/misPerros", misPerros);
 
 router.get("/exposiciones", vistaExposiciones);
 
+
 router.get("/inscribirPerro", vistaInscribirPerro);
 router.get("/inscribirPerro/:id", vistaInscribirPerro);
 router.get("/obtenerPerrosParaInscripcion", obtenerPerrosParaInscripcion);
 router.post("/inscribirPerros", inscribirPerros);
 
+router.get("/misInscripcionesYPagos", misInscripcionesYPagos);
+router.get("/generarPDF/:codPago", generarPDF);
+router.post("/pagar/:cod_pago", pagar);
 export default router;

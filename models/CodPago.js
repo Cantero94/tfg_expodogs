@@ -2,6 +2,8 @@
 import { DataTypes } from "sequelize";
 import db from "../config/db.js";
 import { Inscripcion } from "./Inscripcion.js";
+import { Usuario } from "./Usuario.js";
+
 
 export const CodPago = db.define("cod_pago", {
   id_pago: {
@@ -29,7 +31,7 @@ export const CodPago = db.define("cod_pago", {
   fecha_pago: {
     type: DataTypes.DATE,
     allowNull: true,
-  },
+  }
 }, {
   tableName: "cod_pagos",
   timestamps: true

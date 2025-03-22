@@ -9,7 +9,7 @@ import { generarPDFInscripcion } from "../utils/generarPDFInscripcion.js";
 import crypto from "crypto";
 import fs from "fs/promises";
 
-export const vistaInscribirPerro = async (req, res) => {
+const vistaInscribirPerro = async (req, res) => {
   
   const usuarioId = req.session.usuario?.id;
   if (!usuarioId) return res.redirect("/");
@@ -35,7 +35,7 @@ export const vistaInscribirPerro = async (req, res) => {
   });
 };
 
-export const obtenerPerrosParaInscripcion = async (req, res) => {
+const obtenerPerrosParaInscripcion = async (req, res) => {
   const usuarioId = req.session.usuario?.id;
   const { expoId } = req.query;
   if (!usuarioId || !expoId)
@@ -58,10 +58,10 @@ export const obtenerPerrosParaInscripcion = async (req, res) => {
   res.json(perrosInscritos);
 };
 
-export const inscribirPerros = async (req, res) => {
+const inscribirPerros = async (req, res) => {
   try {
     const usuarioId = req.session.usuario?.id;
-    if (!usuarioId) return res.status(401).json({ error: "Usuario no autenticado." });
+    if (!usuarioId) return res.redirect("/");
 
     const usuario = await Usuario.findByPk(usuarioId);
     const { expoId, perros } = req.body;
@@ -200,3 +200,135 @@ const enviarCorreoConfirmacionInscripcion = async (usuario, exposicion, cod_pago
     console.error("❌ Error al enviar correo inscripción:", error);
   }
 };
+
+const misInscripcionesYPagos = async (req, res) => {
+  try {
+    const usuarioId = req.session.usuario?.id;
+    if (!usuarioId) return res.redirect("/");
+
+    const pagos = await CodPago.findAll({
+      where: { id_usuario: usuarioId },
+      include: [
+        {
+          model: Inscripcion,
+          as: "inscripciones",
+          include: [
+            {
+              model: Perro,
+              attributes: ["id_perro", "nombre", "raza", "sexo", "microchip", "libro", "numero_libro"]
+            },
+            {
+              model: Exposicion,
+              attributes: ["id_exposicion", "nombre", "fecha"]
+            }
+          ]
+        },
+        {
+          model: Exposicion,
+          attributes: ["id_exposicion", "nombre", "fecha"]
+        }
+      ],
+      order: [["createdAt", "DESC"]]
+    });
+    
+    // console.log("📦 Pagos con inscripciones:", JSON.stringify(pagos, null, 2));
+    
+    const pagosConAgrupadas = pagos.map((pago) => {
+      const agrupadas = {};
+    
+      (pago.inscripciones || []).forEach((insc) => {
+        const raza = insc.perro?.raza || "Sin raza";
+        if (!agrupadas[raza]) agrupadas[raza] = [];
+        agrupadas[raza].push(insc);
+      });
+    
+      return {
+        ...pago.get({ plain: true }),
+        agrupadas
+      };
+    });
+    
+    res.render("misInscripcionesYPagos", {
+      pagina: "Mis Inscripciones y Pagos",
+      pagos: pagosConAgrupadas,
+      usuario: req.session.usuario
+    });
+
+  } catch (error) {
+    console.error("❌ Error al obtener inscripciones:", error);
+    res.status(500).render("500", { pagina: "Error", error });
+  }
+};
+
+const generarPDF = async (req, res) => {
+  try {
+    const { codPago } = req.params;
+
+    const pago = await CodPago.findOne({
+      where: { cod_pago: codPago },
+      include: [
+        {
+          model: Inscripcion,
+          as: "inscripciones",
+          include: [Perro]
+        },
+        Exposicion,
+        Usuario
+      ]
+    });
+
+    if (!pago) {
+      return res.status(404).send("Código de pago no encontrado.");
+    }
+
+    const usuario = pago.usuario;
+    const exposicion = pago.exposicion;
+    const inscripciones = pago.inscripciones || [];
+    const perros = inscripciones.map(i => i.perro).filter(Boolean);
+
+    const pdfPath = await generarPDFInscripcion(usuario, exposicion, pago, perros, inscripciones);
+
+    return res.sendFile(pdfPath);
+  } catch (err) {
+    console.error("❌ Error al generar PDF:", err);
+    return res.status(500).send("Error al generar el PDF.");
+  }
+};
+
+const pagar = async (req, res) => {
+  try {
+    const { cod_pago } = req.params;
+    const usuarioId = req.session.usuario?.id;
+
+    if (!usuarioId) return res.redirect("/");
+
+    const pago = await CodPago.findOne({ where: { cod_pago, id_usuario: usuarioId } });
+
+    if (!pago) {
+      return res.status(404).render("404", { pagina: "Pago no encontrado" });
+    }
+
+    if (pago.estado === "pagado") {
+      return res.redirect("/misInscripcionesYPagos");
+    }
+
+    await pago.update({
+      estado: "pagado",
+      fecha_pago: new Date()
+    });
+
+    res.redirect("/misInscripcionesYPagos");
+  } catch (error) {
+    console.error("❌ Error al marcar pago como pagado:", error);
+    res.status(500).render("500", { pagina: "Error", error });
+  }
+};
+
+export {
+  vistaInscribirPerro,
+  obtenerPerrosParaInscripcion,
+  inscribirPerros,
+  misInscripcionesYPagos,
+  generarPDF,
+  pagar
+}
