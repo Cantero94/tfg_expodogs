@@ -37,13 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const headingId = `heading-${raza.replace(/\s+/g, '-')}`;
   
         const perrosHTML = perros.map(p => `
-          <div class="perro-item d-flex justify-content-between align-items-center my-1 border-bottom">
-            <label class="d-flex align-items-center">
-              <input class="me-2" type="checkbox" name="perrosSeleccionados"
-                value="${p.id_perro}" data-raza="${raza}" ${p.inscrito ? "disabled" : ""}>
-              <span><b>${p.nombre}</b></span>
-            </label>
-            <div class="d-flex align-items-center">
+          <div class="perro-item d-flex justify-content-between align-items-center my-1 py-1 border-bottom border-secondary flex-wrap">
+            <div>
+              <label class="d-flex align-items-center">
+                <input class="form-check-input me-2" type="checkbox" name="perrosSeleccionados"
+                  value="${p.id_perro}" data-raza="${raza}" ${p.inscrito ? "disabled" : ""}>
+                <span><b>${p.nombre}</b></span>
+              </label>
+            </div>
+            <div class="d-flex align-items-center ms-auto">
             ${p.inscrito ? `<span class="badge bg-success ms-2">Ya inscrito</span>` : ""}
               <select class="form-select form-select-sm ms-2" name="clase" disabled
                 data-id="${p.id_perro}" ${p.inscrito ? "disabled" : ""}>
@@ -59,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <h2 class="accordion-header" id="${headingId}">
               <button class="accordion-button" type="button" data-bs-toggle="collapse"
                 data-bs-target="#${collapseId}" aria-expanded="${i === 0}" aria-controls="${collapseId}">
-                Raza: ${raza}
+                <b>Raza: ${raza}</b>
               </button>
             </h2>
             <div id="${collapseId}" class="accordion-collapse collapse ${i === 0 ? "show" : ""}" aria-labelledby="${headingId}" data-bs-parent="#accordionPerros">
@@ -151,5 +153,8 @@ document.addEventListener("DOMContentLoaded", () => {
         errorModal.show();
       }
     });
+    if (select.value) {
+      select.dispatchEvent(new Event("change"));
+    }
   });
   

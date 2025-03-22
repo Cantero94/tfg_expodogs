@@ -7,7 +7,7 @@ block content
       .text-end.mb-2
         button.btn.btn-secondary#toggleAll Expandir Todas
 
-      .accordion.bg-light(id="accordionPerros")
+      .accordion.bg-light#accordionPerros
         each raza, index in Object.keys(perrosPorRaza)
           - var perros = perrosPorRaza[raza] // Obtener los perros de esta raza
 

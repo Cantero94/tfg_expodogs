@@ -9,6 +9,7 @@ import crypto from "crypto";
 import fs from "fs/promises";
 
 export const vistaInscribirPerro = async (req, res) => {
+  
   const usuarioId = req.session.usuario?.id;
   if (!usuarioId) return res.redirect("/");
 
@@ -23,9 +24,12 @@ export const vistaInscribirPerro = async (req, res) => {
     order: [["fecha", "ASC"]],
   });
 
+  const expoSeleccionada = req.params.id || null;
+
   res.render("inscribirPerro", {
     pagina: "Inscribir Perro",
     exposiciones,
+    expoSeleccionada,
     usuario: req.session.usuario || null,
   });
 };

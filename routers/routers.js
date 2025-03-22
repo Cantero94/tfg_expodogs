@@ -44,6 +44,7 @@ router.get("/misPerros", misPerros);
 router.get("/exposiciones", vistaExposiciones);
 
 router.get("/inscribirPerro", vistaInscribirPerro);
+router.get("/inscribirPerro/:id", vistaInscribirPerro);
 router.get("/obtenerPerrosParaInscripcion", obtenerPerrosParaInscripcion);
 router.post("/inscribirPerros", inscribirPerros);
 

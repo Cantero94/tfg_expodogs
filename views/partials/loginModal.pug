@@ -17,8 +17,11 @@ div#loginModal.modal.fade(tabindex="-1" aria-labelledby="loginModalLabel" aria-h
                         input#password.form-control(type='password' name="password" placeholder='Tu contraseña' required)
                         small#passwordError.text-danger
 
-                    div.d-flex.justify-content-end
-                        button.btn.btn-warning.mt-2(type='submit') Iniciar Sesión
+                    div.d-flex.justify-content-end.mt-2
+                        div.form-check.my-auto.me-3
+                            input#rememberMe.form-check-input(type="checkbox" name="remember")
+                            label.form-check-label.text-truncate(for="rememberMe") No cerrar sesión
+                        button.btn.btn-warning.text-truncate(type='submit') Iniciar Sesión
 
             div.modal-footer
                 p(class='mt-3')

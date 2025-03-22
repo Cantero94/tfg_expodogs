@@ -11,8 +11,11 @@ block asidepanel
                     input#password.form-control(type='password' name="password" placeholder='Tu contraseña' required)
                     small#passwordError.text-danger
 
-                div.d-flex.justify-content-end
-                    button.btn.btn-warning.mt-2(type='submit') Iniciar Sesión
+                div.d-flex.justify-content-end.mt-2
+                    div.form-check.my-auto.me-3
+                        input#rememberMe.form-check-input(type="checkbox" name="remember")
+                        label.form-check-label.text-truncate(for="rememberMe") No cerrar sesión
+                    button.btn.btn-warning.text-truncate(type='submit') Iniciar Sesión
 
 
             p(class='mt-3')
@@ -34,4 +37,5 @@ block asidepanel
             //- li.list-group-item
                 a.text-dark.text-decoration-none(href="/dorsales") Dorsales
         form(action="/logout" method="POST")
-            button.btn.btn-warning(type='submit') Cerrar Sesión
+            div.d-flex.justify-content-end
+                button.btn.btn-warning(type='submit') Cerrar Sesión

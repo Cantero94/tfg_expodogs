@@ -9,7 +9,7 @@ block content
       select#selectExposicion.form-select
         option(value="") -- Selecciona una exposición --
         each expo in exposiciones
-          option(value=expo.id_exposicion)= expo.nombre
+          option(value=expo.id_exposicion selected=(expoSeleccionada == expo.id_exposicion.toString()))= expo.nombre
 
     #perrosContainer.mt-4(style="display: none;")
       .text-end.mb-2

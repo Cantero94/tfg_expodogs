@@ -7,11 +7,13 @@ block content
         // Mixin para una tarjeta individual
         mixin card(exposicion)
             .col-lg-4
-                .card.d-flex.flex-column.h-100
+                .card.d-flex.flex-column.h-100.my-1
                     img(src=(exposicion.cartel ? exposicion.cartel : 'images/placeholder.png') alt=exposicion.nombre class="card-img-top")
                     .card-body.text-center.d-flex.flex-column.justify-content-between
                         h5.card-title= exposicion.nombre
                         p.card-text= exposicion.fecha
+                        if usuario
+                            a.btn.btn-warning.mt-auto(href=`/inscribirPerro/${exposicion.id_exposicion}`) Inscribir perro
                         //- a.btn.btn-dark.mt-auto(href="#") Más Información
 
         // Mixin para el carrusel de exposiciones
