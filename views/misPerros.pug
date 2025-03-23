@@ -27,6 +27,12 @@ block content
 
     else
       .alert.alert-info.text-center No tienes perros registrados.
+      .text-center.mt-3
+        form(method="POST", action="/cargarPerrosDemo")
+          button.btn.btn-success(type="submit") 
+            i.bi.bi-plus-circle.me-1
+            | Añadir perros
+
 
     .text-center.mt-4
       //- a.btn.btn-success.disabled(href="/agregarPerro") Añadir Perro

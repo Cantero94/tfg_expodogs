@@ -15,9 +15,9 @@ block content
           - const headingId = `heading-${pago.id_pago}`
           - const fecha = new Date(expo.fecha).toISOString().slice(0, 10)
 
-          .accordion-item.mb-3.border.border-warning
+          .accordion-item
             h2.accordion-header(id=headingId)
-              button.accordion-button.collapsed.text-dark.bg-warning-subtle(type="button", data-bs-toggle="collapse", data-bs-target=`#${collapseId}`, aria-expanded="false", aria-controls=collapseId)
+              button.accordion-button.collapsed.text-dark.bg-warning(type="button", data-bs-toggle="collapse", data-bs-target=`#${collapseId}`, aria-expanded="false", aria-controls=collapseId)
                 b #{fecha} - #{expo.nombre} - Código: #{pago.cod_pago}
 
             .accordion-collapse.collapse(id=collapseId, aria-labelledby=headingId, data-bs-parent="#accordionPagos")
@@ -35,25 +35,26 @@ block content
                         
                 hr
                 p.fw-bold.mt-3 Total: #{pago.total.toFixed(2)}€
-
-                p Estado:
-                    span.badge(
+                .row.d-flex.justify-content-between.align-items-center.my-auto
+                  .col-auto
+                    p.mb-0 Estado:
+                      span.badge(
                         class={
-                        "bg-success": pago.estado === "pagado",
-                        "bg-warning": pago.estado === "pendiente",
-                        "bg-danger": pago.estado === "fallido"
+                          "bg-success": pago.estado === "pagado",
+                          "bg-warning": pago.estado === "pendiente",
+                          "bg-danger": pago.estado === "fallido"
                         }
-                    ) #{pago.estado.toUpperCase()}
-
-                .mt-3.d-flex.flex-wrap.gap-2
-                    a.btn.btn-outline-secondary(href=`/generarPDF/${pago.cod_pago}`, target="_blank")
-                        i.bi.bi-file-earmark-pdf-fill.me-1
-                        | Generar PDF
-                    if pago.estado === "pendiente"
-                        form(method="POST", action=`/pagar/${pago.cod_pago}`)
-                            button.btn.btn-success(type="submit")
-                                i.bi.bi-credit-card.me-1
-                                | Marcar como Pagado
+                      ) #{pago.estado.toUpperCase()}
+                  .col-auto.d-flex.flex-wrap.gap-2.align-items-stretch
+                      a.btn.btn-danger.d-flex.align-items-center(href=`/generarPDF/${pago.cod_pago}`, target="_blank")
+                        i.bi.bi-filetype-pdf.mx-2
+                        | Descargar PDF
+                      if pago.estado === "pendiente"
+                        div
+                          form(method="POST", action=`/pagar/${pago.cod_pago}`)
+                            button(type="submit", class="btn btn-success d-flex align-items-center h-100")
+                              i.bi.bi-credit-card.mx-2
+                              | Pagar
     else
         .alert.alert-info.text-center No tienes inscripciones registradas.
 
