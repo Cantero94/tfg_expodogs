@@ -46,8 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
               </label>
             </div>
             <div class="d-flex align-items-center ms-auto">
-            ${p.inscrito ? `<span class="badge bg-success ms-2">Ya inscrito</span>` : ""}
-              <select class="form-select form-select-sm ms-2" name="clase" disabled
+            ${p.inscrito ? `<span class="badge bg-success mx-2">Ya inscrito</span>` : ""}
+              <select class="form-select form-select-sm mt-1 mt-md-0" name="clase" disabled
                 data-id="${p.id_perro}" ${p.inscrito ? "disabled" : ""}>
                 <option value="">Seleccionar clase</option>
                 ${clases.map(c => `<option ${p.clase === c ? "selected" : ""}>${c}</option>`).join("")}

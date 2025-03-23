@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const dniRegex = /^\d{8}[A-Z]$/;  // DNI Español
         const nieRegex = /^[XYZ]\d{7}[A-Z]$/; // NIE Español
         const extranjeroRegex = /^[A-Z0-9]{6,20}$/i;  // Pasaporte o ID extranjero
-        const dni = data.dni.toUpperCase().trim();
+        const dni = data.dni.toUpperCase().replace(/[\s.-]/g, '').trim();
         if (dniRegex.test(dni)) {
             // Si es un DNI, validar la letra
             const numero = dni.slice(0, -1);
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (errorElement) errorElement.textContent = `❌ ${errores[campo]}`;
                 if (inputElement) inputElement.classList.add("is-invalid");
             });
-            
+
             estaRegistrando = false;
             registerBtn.innerHTML = "Registrarme";
             registerBtn.disabled = false;

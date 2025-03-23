@@ -3,13 +3,6 @@ extends layout/layout
 block content
   .container.mt-5
     h1 Inscribir Perro en Exposición
-    .alert.alert-info
-      h5 Instrucciones para inscribir:
-      ul.mb-0
-        li Despliega la raza del perro que deseas inscribir (o pulsa "Expandir Todas").
-        li Marca el checkbox junto al perro para seleccionarlo.
-        li Elige la clase en la que participará.
-        li Marca la casilla de confirmación al final para poder inscribirlos.
 
     .mb-4
       label(for="selectExposicion") Selecciona una exposición:
@@ -31,6 +24,15 @@ block content
 
         .text-center.mt-3
           button.btn.btn-warning#inscribirBtn(disabled) Inscribir Perros
+    
+    .alert.alert-info.mt-3
+      h5 Ayuda para el usuario:
+      ul.mb-0
+        li Selecciona una exposición de la lista desplegable.
+        li Despliega la raza del perro que deseas inscribir (o pulsa "Expandir Todas").
+        li Marca el checkbox junto al perro para seleccionarlo.
+        li Elige la clase en la que participará.
+        li Marca la casilla de confirmación al final para poder inscribirlos.
 
 block asidepanel
   include asidePanel

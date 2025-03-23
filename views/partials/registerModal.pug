@@ -26,13 +26,14 @@ div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel
                   label.form-label(for="password2") Repetir Contraseña:
                   input.form-control(type="password" id="password2" name="password2" required)
                   small#error-password2.text-danger
-            small.text-muted.text-justify
-                | Al registrarte en esta plataforma, declaras bajo tu responsabilidad que eres el propietario legal de los perros que inscribas. 
-                | En caso de no serlo, se podrán anular los puntos que hayas obtenido y aplicar las sanciones correspondientes.
-            .mb-3.my-1
-                label
-                input#condiciones(type="checkbox" name="condiciones" required)
-                |  He leído y acepto estas condiciones
+            .alert.alert-secondary.mt-3
+              small.text-muted.text-justify
+                  | Al registrarte en esta plataforma, declaras bajo tu responsabilidad que eres el propietario legal de los perros que inscribas. 
+                  | En caso de no serlo, se podrán anular los puntos que hayas obtenido y aplicar las sanciones correspondientes.
+              .my-1
+                  label
+                  input#condiciones(type="checkbox" name="condiciones" required)
+                  |  He leído y acepto estas condiciones
             h3 Datos del propietario de la cuenta
             fieldset#propietarioFields(disabled)
               .row
@@ -48,8 +49,8 @@ div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel
                           small#error-apellidos.text-danger
                   .col-12.col-md-6.col-lg-4
                       .mb-3
-                          label.form-label(for="dni") DNI:
-                          input.form-control(type="text" id="dni" name="dni" required)
+                          label.form-label(for="dni") DNI/NIE/PASAPORTE:
+                          input.form-control(type="text" id="dni" name="dni" placeholder="ej: 12345678Z, X1234567Y" required)
                           small#error-dni.text-danger
               
                   .col-12.col-md-6.col-lg-4
@@ -89,7 +90,14 @@ div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel
                           label.form-label(for="telefono2") Teléfono 2:
                           input.form-control(type="text" id="telefono2" name="telefono2")
                           small#error-telefono2.text-danger
-          
+              .alert.alert-secondary.mt-3
+                small.text-muted.text-justify
+                  | Los datos personales solicitados son necesarios para poder emitir correctamente las facturas y cumplir con la normativa legal vigente. 
+                  | En ningún caso serán compartidos con terceros y se tratarán con total confidencialidad, respetando la Ley de Protección de Datos. 
+                  br
+                  | Únicamente el nombre y apellidos del propietario aparecerán en los catálogos de las exposiciones donde inscriba a sus perros.
+
+                      
             .modal-footer
               button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
               button.btn.btn-warning#registerBtn(type="submit") Registrarme

@@ -52,6 +52,12 @@
     text-align: justify !important;
 }
 
+small.text-justify {
+    display: block !important;
+    text-align: justify !important;
+  }
+  
+
 .is-invalid {
     border: 1px solid red !important;
     background-color: #ffebeb !important;
