@@ -96,6 +96,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (errorElement) errorElement.textContent = `❌ ${errores[campo]}`;
                 if (inputElement) inputElement.classList.add("is-invalid");
             });
+
+            estaActualizando = false;
+            updateBtn.innerHTML = "Actualizar Datos";
+            updateBtn.disabled = false;
+
             return;
         }
 

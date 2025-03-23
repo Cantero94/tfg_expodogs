@@ -112,6 +112,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (errorElement) errorElement.textContent = `❌ ${errores[campo]}`;
                 if (inputElement) inputElement.classList.add("is-invalid");
             });
+            
+            estaRegistrando = false;
+            registerBtn.innerHTML = "Registrarme";
+            registerBtn.disabled = false;
+
             return;
         }
 
