@@ -219,13 +219,13 @@ const misInscripcionesYPagos = async (req, res) => {
             },
             {
               model: Exposicion,
-              attributes: ["id_exposicion", "nombre", "fecha"]
+              attributes: ["id_exposicion", "nombre", "nombre_corto", "fecha"]
             }
           ]
         },
         {
           model: Exposicion,
-          attributes: ["id_exposicion", "nombre", "fecha"]
+          attributes: ["id_exposicion", "nombre", "nombre_corto", "fecha"]
         }
       ],
       order: [["createdAt", "DESC"]]

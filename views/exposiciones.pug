@@ -1,34 +1,35 @@
 extends layout/layout
 
 block content
-  .container.mt-4
+  .container.mt-xl-5
     h1.text-center Exposiciones
 
     // Barra de búsqueda y filtros
     .row.mb-3
-      .col-md-3.my-1
-        input.form-control#search(type="text" placeholder="Buscar exposiciones por nombre")
+      .col-md-3.my-1.px-1
+        input.fs-7.form-control#search(type="text" placeholder="Buscar exposiciones por nombre")
 
-      .col-md-3.my-1
-        select.form-select#filterOrganizador
+      .col-md-3.my-1.px-1
+        select.fs-7.form-select#filterOrganizador
           option(value="") Entidad Organizadora
           each entidad in entidadesUnicas
             option(value=entidad)= entidad
 
-      .col-md-2.my-1
-        input.form-control#filterYear(type="number" placeholder="Año" min="2017" max="2050")
+      .col-3.col-md-auto.my-1.px-1
+        input.fs-7.form-control#filterYear(type="number" placeholder="Año" min="2017" max="2050")
 
-      .col-md-2.my-1
-        select.form-select#itemsPerPage
+      .col-2.col-md-auto.my-1.px-1
+        select.fs-7.form-select#itemsPerPage
           option(value="5") 5
           option(value="10") 10
           option(value="20") 20
           option(value="50") 50
           option(value="100") 100
 
-      .col-md-2.d-flex.gap-2.my-1
-        button.btn.btn-dark.w-100#clearFilters Limpiar Filtros
-        button.btn.btn-warning.w-100#searchButton Buscar
+      .col-2.d-flex.gap-2.my-1.px-1
+        button.fs-7.btn.btn-dark#clearFilters
+          i.fas.fa-filter-circle-xmark
+        //- button.fs-7.btn.btn-warning.w-100.text-nowrap#searchButton Buscar
 
     // Tabla de exposiciones
     .table-responsive

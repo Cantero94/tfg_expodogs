@@ -79,3 +79,7 @@ small.text-justify {
 .form-check-input:checked{
     border-color:#bf8f00 !important;
 }
+
+.fs-7 {
+    font-size: 0.75rem !important;
+}

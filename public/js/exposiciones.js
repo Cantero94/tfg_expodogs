@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("search");
   const filterOrganizador = document.getElementById("filterOrganizador");
   const filterYear = document.getElementById("filterYear");
-  const itemsPerPage = document.getElementById("itemsPerPage"); // Selector de registros por página
-  const searchButton = document.getElementById("searchButton");
+  const itemsPerPage = document.getElementById("itemsPerPage");
+  // const searchButton = document.getElementById("searchButton");
   const clearFilters = document.getElementById("clearFilters");
   const tableBody = document.getElementById("expoTableBody");
   const paginationContainer = document.querySelector(".pagination");
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Eventos
-  searchButton.addEventListener("click", () => fetchExposiciones());
+  // searchButton.addEventListener("click", () => fetchExposiciones());
   searchInput.addEventListener("input", () => fetchExposiciones());
   filterOrganizador.addEventListener("change", () => fetchExposiciones());
   filterYear.addEventListener("input", () => fetchExposiciones());
