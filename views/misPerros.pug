@@ -13,7 +13,7 @@ block content
 
           .accordion-item
             h2.accordion-header(id=`heading-${raza.replace(/\s+/g, '-')}`)
-              button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target=`#collapse-${raza.replace(/\s+/g, '-')}` aria-expanded=(index === 0 ? "true" : "false") aria-controls=`collapse-${raza.replace(/\s+/g, '-')}`)
+              button.accordion-button(class=(index === 0 ? "primero" : ""), type="button" data-bs-toggle="collapse" data-bs-target=`#collapse-${raza.replace(/\s+/g, '-')}` aria-expanded=(index === 0 ? "true" : "false") aria-controls=`collapse-${raza.replace(/\s+/g, '-')}`)
                 b Raza: #{raza}
 
             .accordion-collapse.collapse(class=(index === 0 ? "show" : "") id=`collapse-${raza.replace(/\s+/g, '-')}` aria-labelledby=`heading-${raza.replace(/\s+/g, '-')}` data-bs-parent="#accordionPerros")

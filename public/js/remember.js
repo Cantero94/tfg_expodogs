@@ -1,27 +1,26 @@
+// Lógica para el formulario de recordar contraseña en /partials/rememberModal.pug
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("formRecordarPassword");
     const emailInput = document.getElementById("emailRecuperacion");
     const emailError = document.getElementById("emailRecuperacionError");
-
-    // Obtener el modal de confirmación
     const rememberModal = new bootstrap.Modal(document.getElementById("rememberModal"));
     const mensajeModal = new bootstrap.Modal(document.getElementById("mensajeModal"));
     const mensajeTitulo = document.getElementById("mensajeTitulo");
     const mensajeTexto = document.getElementById("mensajeTexto");
-
     const rememberBtn = document.getElementById('rememberBtn');
     let estaRecordando = false;
 
     form.addEventListener("submit", async function (event) {
         event.preventDefault();
-
-        if (estaRecordando) return; // ⚠️ Evita doble envío
+        // 🔹 Evitamos el doble envío
+        if (estaRecordando) return;
         estaRecordando = true;
         rememberBtn.disabled = true;
         rememberBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Procesando...`;
 
         emailError.textContent = "";
 
+        // 🔹 Obtenemos los datos del formulario
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
@@ -34,27 +33,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const result = await response.json();
 
+            // 🔹 Si hay un error lo muestra debajo del input
             if (!response.ok) {
-                emailError.textContent = "❌ " + result.error; // 🔹 Mostrar error debajo del input
+                emailError.textContent = "❌ " + result.errores; 
                 emailInput.classList.add("is-invalid");
                 return;
-            } else {
-                // 🔹 Si el email se envió correctamente:
+            } else { // Respuesta válida (200 OK), limpiamos el formulario y mostramos mensaje
                 form.reset();
                 emailInput.classList.remove("is-invalid");
 
-                // 🔹 Cerrar el modal de recuperación
                 rememberModal.hide();
 
-                // 🔹 Mostrar el modal de confirmación
                 mensajeTitulo.textContent = "Correo de recuperación enviado";
-                mensajeTexto.textContent = "Se ha enviado un correo con instrucciones para restablecer tu contraseña. Revisa tu bandeja de entrada.";
+                mensajeTexto.textContent = result.mensaje;
                 mensajeModal.show();
             }
             
         } catch (error) {
             emailError.textContent = "❌ Error de conexión. Inténtalo nuevamente.";
         } finally {
+            // 🔹 Restaurar el botón de restablecer contraseña
             estaRecordando = false;
             rememberBtn.innerHTML = "Enviar correo electrónico";
             rememberBtn.disabled = false;

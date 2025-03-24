@@ -10,10 +10,10 @@ import crypto from "crypto";
 import fs from "fs/promises";
 
 const vistaInscribirPerro = async (req, res) => {
-  
   const usuarioId = req.session.usuario?.id;
   if (!usuarioId) return res.redirect("/");
 
+  // 🔸 Obtenemos las exposiciones con plazos activos
   const hoy = new Date();
   const exposiciones = await Exposicion.findAll({
     where: {
@@ -25,6 +25,7 @@ const vistaInscribirPerro = async (req, res) => {
     order: [["fecha", "ASC"]],
   });
 
+  // 🔸 Obtenemos la exposición seleccionada si se ha pasado un ID desde la vista de la página principal.
   const expoSeleccionada = req.params.id || null;
 
   res.render("inscribirPerro", {
@@ -35,17 +36,19 @@ const vistaInscribirPerro = async (req, res) => {
   });
 };
 
+// Función para obtener los perros del usuario para inscribir en una exposición
 const obtenerPerrosParaInscripcion = async (req, res) => {
   const usuarioId = req.session.usuario?.id;
   const { expoId } = req.query;
-  if (!usuarioId || !expoId)
-    return res.status(400).json({ error: "Faltan datos" });
+  if (!usuarioId || !expoId) return res.status(400).json({ errores: "Faltan datos" });
 
+  // 🔸 Obtiene los perros del usuario y las inscripciones en la exposición seleccionada
   const perros = await Perro.findAll({ where: { id_usuario: usuarioId } });
   const inscripciones = await Inscripcion.findAll({
     where: { id_usuario: usuarioId, id_exposicion: expoId },
   });
 
+  // 🔸 Mapea los perros y añade la propiedad inscrito y clase si está inscrito
   const perrosInscritos = perros.map((perro) => {
     const insc = inscripciones.find((i) => i.id_perro === perro.id_perro);
     return {
@@ -58,6 +61,7 @@ const obtenerPerrosParaInscripcion = async (req, res) => {
   res.json(perrosInscritos);
 };
 
+// Función para inscribir perros en una exposición
 const inscribirPerros = async (req, res) => {
   try {
     const usuarioId = req.session.usuario?.id;
@@ -70,10 +74,11 @@ const inscribirPerros = async (req, res) => {
       return res.status(400).json({ error: "Datos inválidos." });
     }
 
+    // 🔸 Comprobar que la exposición existe y está activa
     const exposicion = await Exposicion.findByPk(expoId);
     const precioBase = exposicion.precio_inscripcion;
 
-    // 🔸 Crea registro CodPago
+    // 🔸 Genera un código de pago y lo crea como registro en cod_pagos
     const cod_pago = crypto.randomBytes(8).toString("hex");
     const nuevoPago = await CodPago.create({
       cod_pago,
@@ -81,25 +86,26 @@ const inscribirPerros = async (req, res) => {
       id_exposicion: expoId,
       total: 0,
       estado: "pendiente",
-      metodo: "desconocido"
+      metodo: "desconocido",
     });
 
-    // 🔸 Contar inscripciones previas para calcular descuentos
+    // 🔸 Contamos cuantas inscripciones tiene el usuario previas para calcular descuentos. Más adelante se actualizará esta parte para contar inscripciones por clase y aplicar los precios correctamente dependiendo si es cachorro, adulto o veterano (si se tiene en cuenta en la exposición)
     const inscripcionesPrevias = await Inscripcion.count({
-      where: { id_usuario: usuarioId, id_exposicion: expoId }
+      where: { id_usuario: usuarioId, id_exposicion: expoId },
     });
 
     let totalFinal = 0;
-    
+
     const nuevasInscripciones = perros.map(({ id_perro, clase }, i) => {
-      const indexTotal = inscripcionesPrevias + i;
-      const factor = indexTotal === 0 ? 1 : indexTotal === 1 ? 0.75 : 0.5;
-      const precio = +(precioBase * factor).toFixed(2);
+      const contador = inscripcionesPrevias + i;
+      const descuento = contador === 0 ? 1 : contador === 1 ? 0.75 : 0.5;
+      const precio = +(precioBase * descuento).toFixed(2);
+      // 🔸 Total que se reflejará en el registro de cod_pago
       totalFinal += precio;
 
       let tarifa_aplicada = "Tercer perro y siguientes";
-      if (indexTotal === 0) tarifa_aplicada = "Primer perro";
-      else if (indexTotal === 1) tarifa_aplicada = "Segundo perro";
+      if (contador === 0) tarifa_aplicada = "Primer perro";
+      else if (contador === 1) tarifa_aplicada = "Segundo perro";
 
       return {
         id_exposicion: expoId,
@@ -108,53 +114,72 @@ const inscribirPerros = async (req, res) => {
         clase,
         precio,
         tarifa_aplicada,
-        id_pago: nuevoPago.id_pago
+        id_pago: nuevoPago.id_pago,
       };
     });
 
+    // 🔸 Hacemos un volcado de todas las inscripciones en la base de datos del tirón, sin hacer insert por cada inscripción.
     await Inscripcion.bulkCreate(nuevasInscripciones);
+
+    // 🔸 Actualizamos el total del pago
     await nuevoPago.update({ total: totalFinal });
 
+    // 🔸 Enviamos un correo de confirmación y pdf
     await enviarCorreoConfirmacionInscripcion(usuario, exposicion, cod_pago);
 
-    return res.status(200).json({ cod_pago });
-
+    return res
+      .status(200)
+      .json({
+        mensaje:
+          "Inscripción registrada con éxito, pero su estado de pago está pendiente, para pagar vaya a Mis inscripciones. Código de pago: " +
+          cod_pago,
+      });
   } catch (error) {
     console.error("❌ Error en inscribirPerros:", error);
     res.status(500).json({ error: "Error en el servidor." });
   }
 };
-  
-const enviarCorreoConfirmacionInscripcion = async (usuario, exposicion, cod_pago) => {
+
+// Función para enviar un correo de confirmación de inscripción con un PDF adjunto
+const enviarCorreoConfirmacionInscripcion = async ( usuario, exposicion, cod_pago ) => {
   try {
     const pago = await CodPago.findOne({
       where: { cod_pago },
       include: {
         model: Inscripcion,
         as: "inscripciones",
-        include: [Perro]
-      }
+        include: [Perro],
+      },
     });
 
     if (!pago || !pago.inscripciones.length) {
       throw new Error("Código de pago no válido o sin inscripciones.");
     }
 
+    // 🔸 Obtenemos los perros inscritos y sus datos
     const inscripciones = pago.inscripciones;
-    const perrosDB = inscripciones.map(i => i.perro);
-
-    const lista = inscripciones.map(i => {
-      const p = i.perro;
-      return `<li style="text-align: left; margin-bottom: 10px;"><b>${p.nombre}</b><br>
+    // 🔸 Obtenemos una lista de los perros inscritos para mandarlos al PDF
+    const perrosPDF = inscripciones.map((i) => i.perro);
+    // 🔸 Creamos una lista de los perros inscritos para el correo
+    const lista = inscripciones.map((i) => {
+        const p = i.perro;
+        return `<li style="text-align: left; margin-bottom: 10px;"><b>${p.nombre}</b><br>
                 - Microchip: ${p.microchip}<br>
                 - ${p.libro} ${p.numero_libro}<br>
                 - Clase: ${i.clase} ${p.sexo}s<br>
                 - Tarifa aplicada: ${i.tarifa_aplicada}<br>
                 - <b>${i.precio}€</b>
               </li>`;
-    }).join("");
+      })
+      .join("");
 
-    const pdfPath = await generarPDFInscripcion(usuario, exposicion, pago, perrosDB, inscripciones);
+    const pdfPath = await generarPDFInscripcion(
+      usuario,
+      exposicion,
+      pago,
+      perrosPDF,
+      inscripciones
+    );
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -169,9 +194,9 @@ const enviarCorreoConfirmacionInscripcion = async (usuario, exposicion, cod_pago
       to: usuario.email,
       subject: "Confirmación de inscripción en Expodogs",
       html: `
-      <div style="font-family: Arial, sans-serif; width: 70%; margin: 0 auto;">
+      <div style="font-family: Arial, sans-serif; width: 50%; margin: 0 auto;">
         <div style="background-color: #212529; padding: 20px; border-radius: 10px; text-align: center;">
-          <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 33%;">
+          <img src="http://expodogs.es/media/img/logo.png" alt="Expodogs Logo" style="width: 50%;">
         </div>
         <h2 style="text-align: center; color: #333;">Hola, ${usuario.nombre}</h2>
         <div style="padding: 0px 20px; text-align: left;">
@@ -182,25 +207,27 @@ const enviarCorreoConfirmacionInscripcion = async (usuario, exposicion, cod_pago
           <hr style="margin: 20px 0;">
           <h4 style="color: #212529;">Detalles de tus perros inscritos:</h4>
           <ul style="padding-left: 20px;">${lista}</ul>
-          <p style="margin-top: 30px; text: center;">Gracias por confiar en <b>Expodogs</b>. Nos vemos en la exposición! 🐾</p>
+          <p style="margin-top: 30px; text-align: center;">Gracias por confiar en <b>Expodogs</b>. Nos vemos en la exposición! 🐾</p>
         </div>
       </div>
       `,
-      attachments: [{
-        filename: `inscripcion_${cod_pago}.pdf`,
-        path: pdfPath,
-      }]
+      attachments: [
+        {
+          filename: `inscripcion_${cod_pago}.pdf`,
+          path: pdfPath,
+        },
+      ],
     };
 
     await transporter.sendMail(mailOptions);
     await fs.unlink(pdfPath); // Borra PDF tras enviar
     console.log("📧 Correo enviado con PDF a:", usuario.email);
-
   } catch (error) {
     console.error("❌ Error al enviar correo inscripción:", error);
   }
 };
 
+// Función para obtener las inscripciones y pagos del usuario
 const misInscripcionesYPagos = async (req, res) => {
   try {
     const usuarioId = req.session.usuario?.id;
@@ -215,45 +242,52 @@ const misInscripcionesYPagos = async (req, res) => {
           include: [
             {
               model: Perro,
-              attributes: ["id_perro", "nombre", "raza", "sexo", "microchip", "libro", "numero_libro"]
+              attributes: [
+                "id_perro",
+                "nombre",
+                "raza",
+                "sexo",
+                "microchip",
+                "libro",
+                "numero_libro",
+              ],
             },
             {
               model: Exposicion,
-              attributes: ["id_exposicion", "nombre", "nombre_corto", "fecha"]
-            }
-          ]
+              attributes: ["id_exposicion", "nombre", "nombre_corto", "fecha"],
+            },
+          ],
         },
-        {
+/*         {
           model: Exposicion,
-          attributes: ["id_exposicion", "nombre", "nombre_corto", "fecha"]
-        }
+          attributes: ["id_exposicion", "nombre", "nombre_corto", "fecha"],
+        }, */
       ],
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
-    
+
     // console.log("📦 Pagos con inscripciones:", JSON.stringify(pagos, null, 2));
-    
+
     const pagosConAgrupadas = pagos.map((pago) => {
       const agrupadas = {};
-    
+
       (pago.inscripciones || []).forEach((insc) => {
         const raza = insc.perro?.raza || "Sin raza";
         if (!agrupadas[raza]) agrupadas[raza] = [];
         agrupadas[raza].push(insc);
       });
-    
+
       return {
         ...pago.get({ plain: true }),
-        agrupadas
+        agrupadas,
       };
     });
-    
+
     res.render("misInscripcionesYPagos", {
       pagina: "Mis Inscripciones y Pagos",
       pagos: pagosConAgrupadas,
-      usuario: req.session.usuario
+      usuario: req.session.usuario,
     });
-
   } catch (error) {
     console.error("❌ Error al obtener inscripciones:", error);
     res.status(500).render("500", { pagina: "Error", error });
@@ -270,11 +304,11 @@ const generarPDF = async (req, res) => {
         {
           model: Inscripcion,
           as: "inscripciones",
-          include: [Perro]
+          include: [Perro],
         },
         Exposicion,
-        Usuario
-      ]
+        Usuario,
+      ],
     });
 
     if (!pago) {
@@ -284,9 +318,15 @@ const generarPDF = async (req, res) => {
     const usuario = pago.usuario;
     const exposicion = pago.exposicion;
     const inscripciones = pago.inscripciones || [];
-    const perros = inscripciones.map(i => i.perro).filter(Boolean);
+    const perros = inscripciones.map((i) => i.perro).filter(Boolean);
 
-    const pdfPath = await generarPDFInscripcion(usuario, exposicion, pago, perros, inscripciones);
+    const pdfPath = await generarPDFInscripcion(
+      usuario,
+      exposicion,
+      pago,
+      perros,
+      inscripciones
+    );
 
     return res.sendFile(pdfPath);
   } catch (err) {
@@ -302,7 +342,9 @@ const pagar = async (req, res) => {
 
     if (!usuarioId) return res.redirect("/");
 
-    const pago = await CodPago.findOne({ where: { cod_pago, id_usuario: usuarioId } });
+    const pago = await CodPago.findOne({
+      where: { cod_pago, id_usuario: usuarioId },
+    });
 
     if (!pago) {
       return res.status(404).render("404", { pagina: "Pago no encontrado" });
@@ -314,7 +356,7 @@ const pagar = async (req, res) => {
 
     await pago.update({
       estado: "pagado",
-      fecha_pago: new Date()
+      fecha_pago: new Date(),
     });
 
     res.redirect("/misInscripcionesYPagos");
@@ -330,5 +372,5 @@ export {
   inscribirPerros,
   misInscripcionesYPagos,
   generarPDF,
-  pagar
-}
+  pagar,
+};

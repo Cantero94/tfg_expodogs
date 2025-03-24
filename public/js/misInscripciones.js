@@ -1,16 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const toggleAllButton = document.getElementById("toggleAll");
-    const accordions = document.querySelectorAll(".accordion-collapse");
-  
-    let allExpanded = false;
+// Lógica para la vista de Mis inscripciones y Pagos de misInscripcionesYPagos.pug
 
-    toggleAllButton.addEventListener("click", function () {
-      accordions.forEach(accordion => {
-        accordion.classList.toggle("show", !allExpanded);
-      });
-  
-      allExpanded = !allExpanded;
-      toggleAllButton.textContent = allExpanded ? "Colapsar Todos" : "Expandir Todos";
-    });
-  });
-  
+// Está vacía de momento porque aprovecha la lógica de accordion

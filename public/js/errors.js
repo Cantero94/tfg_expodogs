@@ -1,4 +1,4 @@
-//Script para partials/errorModal.pug
+// Lógica para modalError de /partials/errorModal.pug
 document.addEventListener("DOMContentLoaded", function () {
     //console.log("💡 Errores recibidos:", window.errores); // Depuración
 

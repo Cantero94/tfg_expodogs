@@ -37,10 +37,12 @@ html(lang="es")
         script(src="/js/mensaje.js")
         script(src="/js/miCuenta.js")
         script(src="/js/misPerros.js")
-        script(src="/js/exposiciones.js")
         script(src="/js/inscribirPerro.js")
         script(src="/js/misInscripcionesYPagos.js")
+        script(src="/js/exposiciones.js")
+        script(src="/js/accordion.js")
         script.
+            //- Pasamos los errores y mensajes a las variables globales de JavaScript 
             window.errores = !{JSON.stringify(errores || [])};
             window.mensaje = !{JSON.stringify(mensaje || "")};
 

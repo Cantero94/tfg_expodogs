@@ -1,3 +1,4 @@
+// Lógica para el formulario de login en /partials/loginModal.pug y asidePanel.pug
 document.addEventListener("DOMContentLoaded", function () {
     const loginForms = document.querySelectorAll("#loginForm"); // Manejar múltiples formularios
     const emailInputs = document.querySelectorAll("#email");
@@ -15,42 +16,40 @@ document.addEventListener("DOMContentLoaded", function () {
             emailInputs[index].classList.remove("is-invalid");
             passwordInputs[index].classList.remove("is-invalid");
 
+            // Almacenar los datos del formulario en un objeto
             const formData = new FormData(loginForm);
             const data = Object.fromEntries(formData.entries());
 
             try {
-                console.log("📡 Enviando datos al servidor:", data);
                 const response = await fetch("/loginUsuario", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data),
                 });
-
+                
                 const result = await response.json();
-                console.log("📥 Respuesta JSON:", result);
 
                 if (!response.ok) {
                     result.errores.forEach(error => {
                         if (error.includes("correo no está registrado")) {
-                            emailErrors[index].textContent = "Este correo no está registrado.";
+                            emailErrors[index].textContent = result.errores;
                             emailInputs[index].classList.add("is-invalid");
                         }
                         if (error.includes("Contraseña incorrecta")) {
-                            passwordErrors[index].textContent = "La contraseña es incorrecta.";
+                            passwordErrors[index].textContent = result.errores;
                             passwordInputs[index].classList.add("is-invalid");
                         }
                         if (error.includes("aún no está activada")) {
-                            emailErrors[index].textContent = "Tu cuenta aún no está activada. Revisa tu correo.";
+                            emailErrors[index].textContent = result.errores;
                         }
                         if (error.includes("bloqueada")) {
-                            emailErrors[index].textContent = "Tu cuenta está bloqueada. Contáctanos para resolverlo.";
+                            emailErrors[index].textContent = result.errores;
                         }
                     });
 
                     return; // Detiene el proceso aquí para evitar que el modal se cierre
                 }
 
-                console.log("✅ Inicio de sesión exitoso, recargando página...");
                 window.location.reload();
 
             } catch (error) {

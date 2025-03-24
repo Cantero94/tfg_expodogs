@@ -1,3 +1,4 @@
+// Lógica para la vista de Inscribir de inscribirPerro.pug
 document.addEventListener("DOMContentLoaded", () => {
     const select = document.getElementById("selectExposicion");
     const container = document.getElementById("perrosContainer");
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         accordion.innerHTML += `
           <div class="accordion-item">
             <h2 class="accordion-header" id="${headingId}">
-              <button class="accordion-button" type="button" data-bs-toggle="collapse"
+              <button class="accordion-button ${i === 0 ? "primero" : ""}" type="button" data-bs-toggle="collapse"
                 data-bs-target="#${collapseId}" aria-expanded="${i === 0}" aria-controls="${collapseId}">
                 <b>Raza: ${raza}</b>
               </button>
@@ -119,10 +120,10 @@ document.addEventListener("DOMContentLoaded", () => {
       inscribirBtn.disabled = true;
       inscribirBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Procesando...`;
       
-      const showError = (mensaje) => {
+      const showError = () => {
         modalErrorList.innerHTML = "";
         const li = document.createElement("li");
-        li.textContent = mensaje;
+        li.textContent = result.errores;
         modalErrorList.appendChild(li);
         errorModal.show();
       };
@@ -148,7 +149,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const result = await res.json();
     
           mensajeTitulo.textContent = "Inscripción completada!";
-          mensajeTexto.textContent = `Inscripción registrada con éxito, pero su estado de pago está pendiente. Código de pago: ${result.cod_pago}`;
+          mensajeTexto.textContent = result.mensaje;
+          // mensajeTexto.textContent = `Inscripción registrada con éxito, pero su estado de pago está pendiente. Código de pago: ${result.cod_pago}`;
           mensajeModal.show();
     
           // Reset UI
@@ -157,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
           confirmCheck.checked = false;
         } else {
           const result = await res.json();
-          showError(result?.error || "❌ Error inesperado al inscribir perros.");
+          showError(result?.errores || "❌ Error inesperado al inscribir perros.");
         }
       } catch (err) {
         showError("❌ Se produjo un error de red. Inténtalo de nuevo.");

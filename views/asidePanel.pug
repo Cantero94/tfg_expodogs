@@ -27,26 +27,26 @@ block asidepanel
         else
             h3 Hola, #{usuario.nombre}
             ul.list-group.my-3
-                li
-                    a.dropdown-item(href="/miCuenta")
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/miCuenta")
                         i.fas.fa-user-gear 
                         |   Mi Cuenta
-                li
-                    a.dropdown-item(href="/misPerros")
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/misPerros")
                         i.fas.fa-dog
                         |   Mis Perros
-                li
-                    a.dropdown-item(href="/inscribirPerro")
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/inscribirPerro")
                         i.fas.fa-file-signature
                         |   Inscribir
-                li
-                    a.dropdown-item(href="/misInscripcionesYPagos")
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/misInscripcionesYPagos")
                         i.fas.fa-file-invoice-dollar
                         |   Mis Inscripciones
-                //- li
-                    a.dropdown-item(href="/dorsales") Dorsales
-                form(action="/logout" method="POST")
-                    div.d-flex.justify-content-end
-                        button.btn.btn-warning(type='submit')
-                            i.fas.fa-arrow-right-from-bracket
-                            |   Cerrar Sesión
+                //- li.list-group-item
+                    a.text-dark.text-decoration-none(href="/dorsales") Dorsales
+            form(action="/logout" method="POST")
+                div.d-flex.justify-content-center
+                    button.btn.btn-warning(type='submit')
+                        i.fas.fa-arrow-right-from-bracket
+                        |   Cerrar Sesión

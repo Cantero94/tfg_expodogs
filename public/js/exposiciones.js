@@ -1,6 +1,7 @@
+// Lógica para la vista de exposiciones de exposiciones.pug
 document.addEventListener("DOMContentLoaded", function () {
-  const searchInput = document.getElementById("search");
-  const filterOrganizador = document.getElementById("filterOrganizador");
+  const nameSearch = document.getElementById("nameSearch");
+  const organizerFilter = document.getElementById("organizerFilter");
   const filterYear = document.getElementById("filterYear");
   const itemsPerPage = document.getElementById("itemsPerPage");
   // const searchButton = document.getElementById("searchButton");
@@ -12,11 +13,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let limit = itemsPerPage.value; // Obtener valor del selector
     if (!limit || isNaN(limit)) limit = 5; // Fallback si no hay valor
 
-    const searchValue = searchInput.value;
-    const organizadorValue = filterOrganizador.value;
+    const nameValue = nameSearch.value;
+    const organizerValue = organizerFilter.value;
     const yearValue = filterYear.value;
 
-    const url = `/exposiciones?page=${page}&limit=${limit}&search=${searchValue}&organizador=${organizadorValue}&year=${yearValue}`;
+    const url = `/exposiciones?page=${page}&limit=${limit}&search=${nameValue}&organizador=${organizerValue}&year=${yearValue}`;
 
     fetch(url)
       .then((response) => response.text())
@@ -30,12 +31,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // Reemplazar paginación
         paginationContainer.innerHTML = doc.querySelector(".pagination").innerHTML;
 
-        attachPaginationEvents();
+        paginationEvents();
       })
       .catch((error) => console.error("Error al actualizar exposiciones:", error));
   }
 
-  function attachPaginationEvents() {
+  function paginationEvents() {
     document.querySelectorAll(".pagination a").forEach((link) => {
       link.addEventListener("click", function (event) {
         event.preventDefault();
@@ -49,8 +50,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Eventos
   // searchButton.addEventListener("click", () => fetchExposiciones());
-  searchInput.addEventListener("input", () => fetchExposiciones());
-  filterOrganizador.addEventListener("change", () => fetchExposiciones());
+  nameSearch.addEventListener("input", () => fetchExposiciones());
+  organizerFilter.addEventListener("change", () => fetchExposiciones());
   filterYear.addEventListener("input", () => fetchExposiciones());
 
   itemsPerPage.addEventListener("change", function () {
@@ -58,11 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   clearFilters.addEventListener("click", () => {
-    searchInput.value = "";
-    filterOrganizador.value = "";
+    nameSearch.value = "";
+    organizerFilter.value = "";
     filterYear.value = "";
     fetchExposiciones();
   });
 
-  attachPaginationEvents();
+  paginationEvents();
 });

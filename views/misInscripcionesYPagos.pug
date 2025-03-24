@@ -17,7 +17,7 @@ block content
 
           .accordion-item
             h2.accordion-header(id=headingId)
-              button.accordion-button(type="button", data-bs-toggle="collapse", data-bs-target=`#${collapseId}`, aria-expanded="false", aria-controls=collapseId)
+              button.accordion-button(class=(index === 0 ? "primero" : ""), type="button", data-bs-toggle="collapse", data-bs-target=`#${collapseId}`, aria-expanded="false", aria-controls=collapseId)
                 b #{fecha} - #{expo.nombre_corto} - #{pago.cod_pago}
                   p.mt-1 Estado de pago:
                       span.ms-2.border.border-dark.badge(
@@ -41,27 +41,19 @@ block content
                   .alert.alert-info.text-center No tienes inscripciones registradas.
                         
                 hr
-                p.fw-bold.mt-3 Total: #{pago.total.toFixed(2)}€
                 .row.d-flex.justify-content-between.align-items-center.my-auto
-                  //- .col-auto
-                    p.mb-0 Estado:
-                      span.badge(
-                        class={
-                          "bg-success": pago.estado === "pagado",
-                          "bg-warning": pago.estado === "pendiente",
-                          "bg-danger": pago.estado === "fallido"
-                        }
-                      ) #{pago.estado.toUpperCase()}
-                  .col-auto.d-flex.flex-wrap.gap-2.align-items-stretch
-                      a.btn.btn-danger.d-flex.align-items-center(href=`/generarPDF/${pago.cod_pago}`, target="_blank")
-                        i.bi.bi-filetype-pdf.mx-2
-                        | Descargar PDF
-                      if pago.estado === "pendiente"
-                        div
-                          form(method="POST", action=`/pagar/${pago.cod_pago}`)
-                            button(type="submit", class="btn btn-success d-flex align-items-center h-100")
-                              i.bi.bi-credit-card.mx-2
-                              | Pagar
+                  .col-auto.me-0.pe-0.pb-0
+                    p.fw-bold.mt-3 Total: #{pago.total.toFixed(2)}€
+                  .col-auto.d-flex.flex-wrap.gap-2.align-items-stretch.ps-0.pb-0
+                    a.btn.btn-danger.d-flex.align-items-center.px-2.py-0(href=`/generarPDF/${pago.cod_pago}`, target="_blank")
+                      i.bi.bi-filetype-pdf.me-2
+                      | Factura
+                    if pago.estado === "pendiente"
+                      div
+                        form(method="POST", action=`/pagar/${pago.cod_pago}`)
+                          button.btn.btn-success.d-flex.align-items-center.h-100.px-2.py-0(type="submit")
+                            i.bi.bi-credit-card.me-2
+                            | Pagar
     else
         .alert.alert-info.text-center No tienes inscripciones registradas.
 

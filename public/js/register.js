@@ -1,3 +1,4 @@
+// Lógica para el formulario de registro en /partials/registerModal.pug
 document.addEventListener('DOMContentLoaded', function () {
     var condicionesCheckbox = document.getElementById('condiciones');
     var propietarioFields = document.getElementById('propietarioFields');
@@ -21,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let estaRegistrando = false;
 
     formRegistro.addEventListener('submit', async function (event) {
-        
-        if (estaRegistrando) return; // ⚠️ Evita doble envío
+        // Evitamos doble envío
+        if (estaRegistrando) return; 
         estaRegistrando = true;
         registerBtn.disabled = true;
         registerBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Procesando...`;
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData(formRegistro);
         const data = Object.fromEntries(formData.entries());
 
-        // ✅ Limpiar errores previos
+        // Limpiar errores previos
         document.querySelectorAll(".text-danger").forEach(e => e.textContent = "");
         document.querySelectorAll(".form-control").forEach(e => e.classList.remove("is-invalid"));
 
@@ -72,30 +73,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const nieRegex = /^[XYZ]\d{7}[A-Z]$/; // NIE Español
         const extranjeroRegex = /^[A-Z0-9]{6,20}$/i;  // Pasaporte o ID extranjero
         const dni = data.dni.toUpperCase().replace(/[\s.-]/g, '').trim();
+        const letraFinal = dni.slice(-1);
+        const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
         if (dniRegex.test(dni)) {
             // Si es un DNI, validar la letra
             const numero = dni.slice(0, -1);
-            const letraUsuario = dni.slice(-1);
-            const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
             const letraCalculada = letrasValidas[numero % 23];
 
-            if (letraUsuario !== letraCalculada) {
+            if (letraFinal !== letraCalculada) {
                 errores["dni"] = "La letra del DNI no es válida.";
             }
         } else if (nieRegex.test(dni)) {
             // Si es un NIE, convertir la letra inicial y validar
             let numero = dni.slice(1, -1);
-            let letraUsuario = dni.slice(-1);
             const letraInicial = dni[0];
 
             if (letraInicial === "X") numero = "0" + numero;
             if (letraInicial === "Y") numero = "1" + numero;
             if (letraInicial === "Z") numero = "2" + numero;
 
-            const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
             const letraCalculada = letrasValidas[parseInt(numero) % 23];
 
-            if (letraUsuario !== letraCalculada) {
+            if (letraFinal !== letraCalculada) {
                 errores["dni"] = "La letra del NIE no es válida.";
             }
         } else if (!extranjeroRegex.test(dni)) {
@@ -104,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
 
-        // 🔹 Mostrar errores debajo de los inputs
+        // 🔹 Obtenemos un array de las claves del objeto errores y se itera sobre cada clave para mostrar los mensajes de error correspondientes y agregar la clase is-invalid a cada campo del formulario.
         if (Object.keys(errores).length > 0) {
             Object.keys(errores).forEach(campo => {
                 let errorElement = document.getElementById(`error-${campo}`);
@@ -133,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (response.ok) { // response.status === 200 OK
                 registerModal.hide();
                 mensajeTitulo.textContent = "Registro completado!";
-                mensajeTexto.textContent = "Hemos enviado un correo electrónico con un enlace para activar tu cuenta. Por favor, revisa tu bandeja de entrada.";
+                mensajeTexto.textContent = result.mensaje;
                 mensajeModal.show();
 
                 formRegistro.reset();
@@ -151,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error en el registro:', error);
             modalErrorList.innerHTML = "";
             let li = document.createElement("li");
-            li.textContent = "Error inesperado. Inténtalo nuevamente.";
+            li.textContent = result.error;
             modalErrorList.appendChild(li);
             errorModal.show();
         } finally {

@@ -2,6 +2,7 @@ import { Usuario } from "../models/Usuario.js";
 import { Perro } from "../models/Perro.js";
 import bcrypt from "bcrypt";
 
+// Función para mostrar los datos de la cuenta del usuario
 const mostrarCuenta = async (req, res) => {
   if (!req.session.usuario) {
     return res.redirect("/");
@@ -59,8 +60,9 @@ const actualizarCuenta = async (req, res) => {
     } = req.body;
 
     if (password && password !== password2) {
-      return res.status(400).json({ error: "Las contraseñas no coinciden." });
+      return res.status(400).json({ errores: "Las contraseñas no coinciden." });
     }
+    // Recordatorio: Añadir validaciones de los campos!
 
     let updateData = {
       nombre,
@@ -94,10 +96,11 @@ const actualizarCuenta = async (req, res) => {
   }
 };
 
+// Función para mostrar los perros del usuario
 const misPerros = async (req, res) => {
   try {
     if (!req.session.usuario) {
-      return res.redirect("/"); // Redirigir si no está autenticado
+      return res.redirect("/"); // Redirigir si no está logeado
     }
 
     const usuarioId = req.session.usuario.id;
@@ -107,9 +110,11 @@ const misPerros = async (req, res) => {
 
     // Agrupar los perros por raza
     const perrosPorRaza = perros.reduce((acc, perro) => {
+      // Si no existe la raza del perro, la creamos
       if (!acc[perro.raza]) {
         acc[perro.raza] = [];
       }
+      // Si existe, añadimos el perro
       acc[perro.raza].push(perro);
       return acc;
     }, {});
@@ -125,6 +130,7 @@ const misPerros = async (req, res) => {
   }
 };
 
+// Como tengo que plantearme bien la estructura de la base de datos para las razas de perros, creo esta función para cargar una pila de perros.
 const cargarPerrosDemo = async (req, res) => {
   const usuarioId = req.session.usuario?.id;
   if (!usuarioId) return res.redirect("/login");

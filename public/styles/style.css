@@ -8,23 +8,17 @@
     height: 66%;
 }
 
-.card-body{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
 .carousel-control-prev {
-    left: -40px;
+    left: -40px !important;
 }
 
 .carousel-control-next {
-    right: -40px;
+    right: -40px !important;
 }
 .carousel-control-prev, .carousel-control-next {
     margin-top: auto;
     margin-bottom: auto;
-    bottom: 50%;
+    /* bottom: 50%; */
     transform: translateY(-50%);
 }
 .carousel-control-next, .carousel-control-prev {
@@ -67,7 +61,21 @@ small.text-justify {
     cursor: not-allowed !important;
 }
 
-.accordion-button:not(.collapsed), .form-check-input:active, .form-check-input:checked, .form-check-input:focus {
+/* Ponemos todos los botones de los acordeones en blanco */
+.accordion-button {
+    background-color: #ffffff !important;
+}
+/* Como el primero se muestra expandido se pone amarillo solo si lo
+ está, por que sino luego se queda amarillo todo el rato */
+.accordion-button.primero:not(.collapsed) {
+    background-color: #fde59b !important;
+}
+/* Ponemos en amarillo los contenedores que han sido focus y no están colapsados */
+.accordion-button:focus.accordion-button:not(.collapsed), .accordion-button.show{
+    background-color: #fde59b !important;
+}
+
+.form-check-input:active, .form-check-input:checked, .form-check-input:focus {
     background-color: #ffc107 !important;
 }
 
@@ -83,3 +91,7 @@ small.text-justify {
 .fs-7 {
     font-size: 0.75rem !important;
 }
+
+#expoTableBody tr {
+    height: 130px; /* Establece la altura de las filas */
+  }

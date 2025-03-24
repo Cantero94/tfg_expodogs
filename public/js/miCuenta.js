@@ -1,9 +1,12 @@
+// Lógica para la vista de Mis Cuenta de miCuenta.pug
 document.addEventListener('DOMContentLoaded', function () {
     const formActualizarCuenta = document.getElementById('formActualizarCuenta');
     const mensajeModal = new bootstrap.Modal(document.getElementById('mensajeModal'));
     const mensajeTitulo = document.getElementById('mensajeTitulo');
     const mensajeTexto = document.getElementById('mensajeTexto');
     const updateBtn = document.getElementById('updateBtn');
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    const modalErrorList = document.getElementById('modalErrorList');
     let estaActualizando = false;
 
     formActualizarCuenta.addEventListener('submit', async function (event) {
@@ -57,30 +60,29 @@ document.addEventListener('DOMContentLoaded', function () {
         const nieRegex = /^[XYZ]\d{7}[A-Z]$/; // NIE Español
         const extranjeroRegex = /^[A-Z0-9]{6,20}$/i;  // Pasaporte o ID extranjero
         const dni = data.dni.toUpperCase().replace(/[\s.-]/g, '').trim();
+        const letraFinal = dni.slice(-1);
+        const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
         if (dniRegex.test(dni)) {
             // Si es un DNI, validar la letra
             const numero = dni.slice(0, -1);
-            const letraUsuario = dni.slice(-1);
-            const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
             const letraCalculada = letrasValidas[numero % 23];
 
-            if (letraUsuario !== letraCalculada) {
+            if (letraFinal !== letraCalculada) {
                 errores["dni"] = "La letra del DNI no es válida.";
             }
         } else if (nieRegex.test(dni)) {
             // Si es un NIE, convertir la letra inicial y validar
             let numero = dni.slice(1, -1);
-            let letraUsuario = dni.slice(-1);
+            
             const letraInicial = dni[0];
 
             if (letraInicial === "X") numero = "0" + numero;
             if (letraInicial === "Y") numero = "1" + numero;
             if (letraInicial === "Z") numero = "2" + numero;
 
-            const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
             const letraCalculada = letrasValidas[parseInt(numero) % 23];
 
-            if (letraUsuario !== letraCalculada) {
+            if (letraFinal !== letraCalculada) {
                 errores["dni"] = "La letra del NIE no es válida.";
             }
         } else if (!extranjeroRegex.test(dni)) {
@@ -116,17 +118,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (response.ok) {
                 mensajeTitulo.textContent = "¡Datos actualizados!";
-                mensajeTexto.textContent = "Tu información ha sido actualizada correctamente.";
+                mensajeTexto.textContent = result.mensaje;
                 mensajeModal.show();
             } else {
-                mensajeTitulo.textContent = "Error al actualizar";
-                mensajeTexto.textContent = result.error;
-                mensajeModal.show();
+                modalErrorList.innerHTML = "";
+                if (result.errores) {
+                    let li = document.createElement("li");
+                    li.textContent = result.errores;
+                    modalErrorList.appendChild(li);
+                }
+                errorModal.show();
             }
         } catch (error) {
-            mensajeTitulo.textContent = "Error de conexión";
-            mensajeTexto.textContent = "No se pudo conectar con el servidor. Inténtalo nuevamente.";
-            mensajeModal.show();
+            modalErrorList.innerHTML = "";
+                if (result.error) {
+                    let li = document.createElement("li");
+                    li.textContent = result.error;
+                    modalErrorList.appendChild(li);
+                }
+                errorModal.show();
         } finally {
             estaActualizando = false;
             updateBtn.innerHTML = "Actualizar Datos";
