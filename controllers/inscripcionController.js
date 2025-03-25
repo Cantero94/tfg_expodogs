@@ -14,7 +14,8 @@ const vistaInscribirPerro = async (req, res) => {
   if (!usuarioId) return res.redirect("/");
 
   // 🔸 Obtenemos las exposiciones con plazos activos
-  const hoy = new Date();
+  const hoy = res.locals.hoy;
+  
   const exposiciones = await Exposicion.findAll({
     where: {
       [Op.or]: [

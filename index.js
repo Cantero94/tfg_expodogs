@@ -20,8 +20,14 @@ db.authenticate()
 
 app.set('view engine', 'pug');
 
+// Congelamos la fecha para que siga mostrando exposiciones futuras
+const frozenDay = new Date("2025-03-24");
+console.log(`📅 Fecha congelada en el día: ${frozenDay.toISOString().slice(0, 10)}`);
+
 app.use((req, res, next) => {
     const year = new Date().getFullYear();
+    // res.locals.hoy = new Date();
+    res.locals.hoy = frozenDay;
     res.locals.year = year;
     res.locals.tituloWeb = 'Expodogs';
     next();

@@ -15,7 +15,7 @@ const paginaInicio = async (req, res) => {
     //const exposiciones = await Exposicion.findAll({ order: [["fecha", "DESC"]] });
 
     // Obtener solo exposiciones próximas para carrusell
-    const hoy = moment().format("YYYY-MM-DD");
+    const hoy = moment(res.locals.hoy).format("YYYY-MM-DD");
     const exposiciones = await Exposicion.findAll({
       where: {
         fecha: { [Op.gt]: hoy }, // Operador de Sequelize mayor que, gt=GreateThan
