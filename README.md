@@ -133,10 +133,7 @@ El sistema gestiona 5 entidades clave:
 │   └── paginaInicio.pug
 │
 ├── index.js                  # Punto de entrada del servidor
-├── jccanterog04_expodogs.sql # Dump SQL inicial
-├── package.json              # Configuración del proyecto y dependencias
-├── package-lock.json         # Versiones exactas de dependencias
-└── README.md                 # Documentación del proyecto
+└── jccanterog04_expodogs.sql # Dump SQL inicial
 ```
 
 ---
