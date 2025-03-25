@@ -65,6 +65,82 @@ El sistema gestiona 5 entidades clave:
 
 ---
 
+## 📁 Estructura del Proyecto
+
+```md
+.
+├── 📁 config
+│   └── db.js                  # Configuración de la base de datos
+│
+├── 📁 controllers             # Lógica de negocio de rutas
+│   ├── authController.js
+│   ├── expoController.js
+│   ├── inscripcionController.js
+│   └── userController.js
+│
+├── 📁 models                  # Modelos Sequelize y relaciones
+│   ├── CodPago.js
+│   ├── Exposicion.js
+│   ├── Inscripcion.js
+│   ├── Perro.js
+│   ├── relaciones.js
+│   └── Usuario.js
+│
+├── 📁 public                  # Recursos públicos
+│   ├── 📁 img                 # Imágenes del sitio
+│   │   └── [...].webp/png
+│   ├── 📁 js                  # Scripts JavaScript frontend
+│   │   ├── accordion.js
+│   │   ├── errors.js
+│   │   ├── exposiciones.js
+│   │   ├── inscribirPerro.js
+│   │   ├── login.js
+│   │   ├── mensaje.js
+│   │   ├── miCuenta.js
+│   │   ├── misInscripciones.js
+│   │   ├── misPerros.js
+│   │   ├── register.js
+│   │   └── remember.js
+│   ├── 📁 pdf                 
+│   └── 📁 styles              # Estilos CSS
+│       └── style.css
+│
+├── 📁 routers                 # Definición de rutas de la app
+│   └── routers.js
+│
+├── 📁 utils                   # Funciones auxiliares
+│   └── generarPDFInscripcion.js
+│
+├── 📁 views                   # Vistas del frontend (Pug)
+│   ├── 📁 layout              # Plantillas base
+│   │   ├── atention.pug
+│   │   ├── footer.pug
+│   │   ├── header.pug
+│   │   ├── layout.pug
+│   │   └── welcome.pug
+│   ├── 📁 partials            # Modales y componentes UI reutilizables
+│   │   ├── errorModal.pug
+│   │   ├── loginModal.pug
+│   │   ├── mensajeModal.pug
+│   │   ├── registerModal.pug
+│   │   └── rememberModal.pug
+│   ├── asidePanel.pug
+│   ├── exposiciones.pug
+│   ├── inscribirPerro.pug
+│   ├── miCuenta.pug
+│   ├── misInscripcionesYPagos.pug
+│   ├── misPerros.pug
+│   └── paginaInicio.pug
+│
+├── index.js                  # Punto de entrada del servidor
+├── jccanterog04_expodogs.sql # Dump SQL inicial
+├── package.json              # Configuración del proyecto y dependencias
+├── package-lock.json         # Versiones exactas de dependencias
+└── README.md                 # Documentación del proyecto
+```
+
+---
+
 ## 👨‍🎓 Autor
 
 **José Carlos Cantero García**  
