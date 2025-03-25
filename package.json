@@ -11,7 +11,6 @@
   "author": "Cantero1994",
   "license": "ISC",
   "dependencies": {
-    "agenciadeviajes": "file:",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "crypto": "^1.0.1",
