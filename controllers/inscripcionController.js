@@ -8,6 +8,10 @@ import { Op } from "sequelize";
 import { generarPDFInscripcion } from "../utils/generarPDFInscripcion.js";
 import crypto from "crypto";
 import fs from "fs/promises";
+import Stripe from "stripe";
+import dotenv from "dotenv";
+dotenv.config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 const vistaInscribirPerro = async (req, res) => {
   const usuarioId = req.session.usuario?.id;
@@ -345,6 +349,7 @@ const pagar = async (req, res) => {
 
     const pago = await CodPago.findOne({
       where: { cod_pago, id_usuario: usuarioId },
+      include: [Exposicion],
     });
 
     if (!pago) {
@@ -355,14 +360,54 @@ const pagar = async (req, res) => {
       return res.redirect("/misInscripcionesYPagos");
     }
 
-    await pago.update({
-      estado: "pagado",
-      fecha_pago: new Date(),
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            product_data: { name: `Inscripciones ${pago.exposicion.nombre_corto}` },
+            unit_amount: Math.round(pago.total * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: { cod_pago },
+      success_url:
+        `${process.env.BASE_URL || "http://localhost:4000"}/pago-exitoso?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:
+        `${process.env.BASE_URL || "http://localhost:4000"}/misInscripcionesYPagos`,
     });
 
+    res.redirect(303, session.url);
+  } catch (error) {
+    console.error("❌ Error al crear sesión de pago:", error);
+    res.status(500).render("500", { pagina: "Error", error });
+  }
+};
+
+const pagoExitoso = async (req, res) => {
+  try {
+    const { session_id } = req.query;
+    if (!session_id) return res.redirect("/misInscripcionesYPagos");
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const cod_pago = session.metadata.cod_pago;
+
+    const pago = await CodPago.findOne({ where: { cod_pago } });
+    if (pago && pago.estado !== "pagado") {
+      await pago.update({
+        estado: "pagado",
+        metodo: "stripe",
+        fecha_pago: new Date(),
+      });
+    }
+
+    req.session.mensaje = "Pago realizado correctamente.";
     res.redirect("/misInscripcionesYPagos");
   } catch (error) {
-    console.error("❌ Error al marcar pago como pagado:", error);
+    console.error("❌ Error al procesar pago exitoso:", error);
     res.status(500).render("500", { pagina: "Error", error });
   }
 };
@@ -374,4 +419,5 @@ export {
   misInscripcionesYPagos,
   generarPDF,
   pagar,
+  pagoExitoso,
 };

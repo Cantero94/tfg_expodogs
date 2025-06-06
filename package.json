@@ -23,6 +23,7 @@
     "pdfkit": "^0.16.0",
     "proyecto_expodogs": "file:",
     "pug": "^3.0.3",
-    "sequelize": "^6.37.5"
+    "sequelize": "^6.37.5",
+    "stripe": "^14.25.0"
   }
 }
