@@ -30,7 +30,7 @@ Este proyecto representa la culminación del aprendizaje adquirido a lo largo de
   - Visualización agrupada por código de pago
   - Acceso a detalles de inscripciones y resumen por tarifa
   - Generación de factura proforma en PDF
-  - Simulación de pago (marcar como pagado)
+  - Pago real integrado con Stripe
 
 ---
 
@@ -41,6 +41,7 @@ Este proyecto representa la culminación del aprendizaje adquirido a lo largo de
 - **ORM & BBDD**: Sequelize, MySQL
 - **Email & PDF**: Nodemailer, PDFKit
 - **Autenticación & Sesión**: Express-session, bcrypt, crypto
+- **Pagos**: Stripe
 - **Deploy**: Render.com (Free Tier)
 
 ---

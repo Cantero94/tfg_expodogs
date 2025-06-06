@@ -22,7 +22,8 @@ import {
     inscribirPerros,
     misInscripcionesYPagos,
     generarPDF,
-    pagar
+    pagar,
+    pagoExitoso
 } from "../controllers/inscripcionController.js";
 
 import {
@@ -56,5 +57,7 @@ router.post("/inscribirPerros", inscribirPerros);
 
 router.get("/misInscripcionesYPagos", misInscripcionesYPagos);
 router.get("/generarPDF/:codPago", generarPDF);
-router.post("/pagar/:cod_pago", pagar);
+router.get("/pagar/:cod_pago", pagar);
+router.get("/pago-exitoso", pagoExitoso);
+
 export default router;

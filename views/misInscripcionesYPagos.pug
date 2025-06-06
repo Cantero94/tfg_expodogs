@@ -49,11 +49,9 @@ block content
                       i.bi.bi-filetype-pdf.me-2
                       | Factura
                     if pago.estado === "pendiente"
-                      div
-                        form(method="POST", action=`/pagar/${pago.cod_pago}`)
-                          button.btn.btn-success.d-flex.align-items-center.h-100.px-2.py-0(type="submit")
-                            i.bi.bi-credit-card.me-2
-                            | Pagar
+                      a.btn.btn-success.d-flex.align-items-center.h-100.px-2.py-0(href=`/pagar/${pago.cod_pago}`)
+                        i.bi.bi-credit-card.me-2
+                        | Pagar
     else
         .alert.alert-info.text-center No tienes inscripciones registradas.
 
