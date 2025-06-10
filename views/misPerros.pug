@@ -23,18 +23,21 @@ block content
                     span.perro-nombre 
                      b #{perro.nombre} 
                      |  (#{perro.libro}-#{perro.numero_libro}) (#{perro.microchip})
-                    //- a.btn.btn-warning.btn-sm.disabled(href=`/editarPerro/${perro.id_perro}`) Editar
+                    a.btn.btn-warning.btn-sm(href=`/editarPerro/${perro.id_perro}`) Editar
 
     else
       .alert.alert-info.text-center No tienes perros registrados.
       .text-center.mt-3
-        form(method="POST", action="/cargarPerrosDemo")
+        form(method="POST", action="/crearPerro")
           button.btn.btn-success(type="submit") 
             i.bi.bi-plus-circle.me-1
-            | Añadir perros
+            | Añadir perro
 
 
     .text-center.mt-4
+      a.btn.btn-success(href="/crearPerro")
+        i.bi.bi-plus-circle.me-1
+        | Añadir perro
       //- a.btn.btn-success.disabled(href="/agregarPerro") Añadir Perro
 
 block asidepanel

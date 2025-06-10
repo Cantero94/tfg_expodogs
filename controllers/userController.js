@@ -131,7 +131,7 @@ const misPerros = async (req, res) => {
 };
 
 // Como tengo que plantearme bien la estructura de la base de datos para las razas de perros, creo esta función para cargar una pila de perros.
-const cargarPerrosDemo = async (req, res) => {
+/* const cargarPerrosDemo = async (req, res) => {
   const usuarioId = req.session.usuario?.id;
   if (!usuarioId) return res.redirect("/login");
 
@@ -253,6 +253,115 @@ const cargarPerrosDemo = async (req, res) => {
     console.error("❌ Error al cargar perros demo:", error);
     return res.status(500).send("Error al insertar datos");
   }
+}; */
+
+// Vista para mostrar el formulario de creación de un perro
+
+
+// Maneja el registro de un nuevo perro
+const crearPerro = async (req, res) => {
+    if (!req.session.usuario) {
+    return res.redirect("/");
+  }
+  res.render("crearPerro", {
+    pagina: "Crear Perro",
+    usuario: req.session.usuario,
+  });
+
+  try {
+    if (!req.session.usuario) return res.redirect("/login");
+    const usuarioId = req.session.usuario.id;
+    const {
+      nombre,
+      raza,
+      sexo,
+      microchip,
+      libro,
+      numero_libro,
+      fecha_nacimiento,
+      padre,
+      madre,
+    } = req.body;
+    await Perro.create({
+      nombre,
+      raza,
+      sexo,
+      microchip,
+      libro,
+      numero_libro,
+      fecha_nacimiento,
+      padre,
+      madre,
+      id_usuario: usuarioId,
+    });
+    res.redirect("/misPerros");
+  } catch (error) {
+    console.error("❌ Error al crear perro:", error);
+    res.status(500).send("Error al insertar perro");
+  }
 };
 
-export { mostrarCuenta, actualizarCuenta, misPerros, cargarPerrosDemo };
+// Vista para editar un perro existente
+const mostrarPerro = async (req, res) => {
+  try {
+    if (!req.session.usuario) return res.redirect("/login");
+    const perro = await Perro.findOne({
+      where: { id_perro: req.params.id, id_usuario: req.session.usuario.id },
+    });
+    if (!perro) return res.redirect("/misPerros");
+
+    res.render("editarPerro", {
+      pagina: "Editar Perro",
+      usuario: req.session.usuario,
+      perro: perro.toJSON(),
+    });
+  } catch (error) {
+    console.error("❌ Error al cargar perro:", error);
+    res.status(500).send("Error en el servidor");
+  }
+};
+
+// Actualiza los datos de un perro
+const editarPerro = async (req, res) => {
+  try {
+    if (!req.session.usuario) return res.redirect("/login");
+    const {
+      nombre,
+      raza,
+      sexo,
+      microchip,
+      libro,
+      numero_libro,
+      fecha_nacimiento,
+      padre,
+      madre,
+    } = req.body;
+
+    await Perro.update(
+      {
+        nombre,
+        raza,
+        sexo,
+        microchip,
+        libro,
+        numero_libro,
+        fecha_nacimiento,
+        padre,
+        madre,
+      },
+      {
+        where: {
+          id_perro: req.params.id,
+          id_usuario: req.session.usuario.id,
+        },
+      }
+    );
+
+    res.redirect("/misPerros");
+  } catch (error) {
+    console.error("❌ Error al actualizar perro:", error);
+    res.status(500).send("Error en el servidor");
+  }
+};
+
+export { mostrarCuenta, actualizarCuenta, misPerros, crearPerro, mostrarPerro, editarPerro };

@@ -183,15 +183,23 @@ const enviarCorreoConfirmacionInscripcion = async ( usuario, exposicion, cod_pag
     );
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+        host: process.env.SMTP_HOST || "localhost",
+        port: parseInt(process.env.SMTP_PORT, 10) || 587,      // 587 para STARTTLS
+        secure: false,                                         // no SMTPS; usaremos STARTTLS
+        requireTLS: true,                                      // exigir cifrado
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          // En entornos Plesk internos, a veces el certificado no es de una CA pública.
+          // Con esto evitamos que nodemailer rechace la conexión por "self-signed".
+          rejectUnauthorized: false
+        }
     });
 
     const mailOptions = {
-      from: "jc.canterito@gmail.com",
+      from: `"Expodogs" <info@canterodev.es>`,
       to: usuario.email,
       subject: "Confirmación de inscripción en Expodogs",
       html: `

@@ -13,7 +13,9 @@ import {
     mostrarCuenta,
     actualizarCuenta,
     misPerros,
-    cargarPerrosDemo
+    crearPerro, 
+    mostrarPerro, 
+    editarPerro
 } from "../controllers/userController.js";
 
 import {
@@ -43,7 +45,9 @@ router.get("/restablecer-password", restablecerPassword);
 router.get("/miCuenta", mostrarCuenta);
 router.post("/actualizarCuenta", actualizarCuenta);
 router.get("/misPerros", misPerros);
-router.post("/cargarPerrosDemo", cargarPerrosDemo);
+router.post("/crearPerro", crearPerro);
+router.get("/editarPerro/:id", mostrarPerro);
+router.post("/editarPerro/:id", editarPerro);
 
 
 router.get("/exposiciones", vistaExposiciones);

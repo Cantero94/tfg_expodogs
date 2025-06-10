@@ -242,15 +242,23 @@ const validarDatosRegistro = (datos) => {
 const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+        host: process.env.SMTP_HOST || "localhost",
+        port: parseInt(process.env.SMTP_PORT, 10) || 587,      // 587 para STARTTLS
+        secure: false,                                         // no SMTPS; usaremos STARTTLS
+        requireTLS: true,                                      // exigir cifrado
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          // En entornos Plesk internos, a veces el certificado no es de una CA pública.
+          // Con esto evitamos que nodemailer rechace la conexión por "self-signed".
+          rejectUnauthorized: false
+        }
     });
 
     const mailOptions = {
-      from: "jc.canterito@gmail.com",
+      from: `"Expodogs" <info@canterodev.es>`,
       to: email,
       subject: "Confirma tu cuenta en Expodogs",
 
@@ -262,7 +270,7 @@ const enviarCorreoConfirmacion = async (email, nombre, tokenVerificacion) => {
             <h1 style="text-align: center;">Hola, ${nombre}</h1>
             <div style="padding: 0px 20px; text-align: center;">
             <p style="text-align: left;">Gracias por registrarte en Expodogs. Para activar tu cuenta, haz clic en el siguiente enlace:</p>
-            <a href="https://tfg-expodogs.onrender.com/verificar-cuenta?token=${tokenVerificacion}" 
+            <a href="https://expodogs.canterodev.es/verificar-cuenta?token=${tokenVerificacion}" 
             style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             Activar mi cuenta
             </a>
@@ -428,15 +436,23 @@ const recordarPassUsuario = async (req, res) => {
 const enviarCorreoRestablecer = async (email, nombre, token) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+        host: process.env.SMTP_HOST || "localhost",
+        port: parseInt(process.env.SMTP_PORT, 10) || 587,      // 587 para STARTTLS
+        secure: false,                                         // no SMTPS; usaremos STARTTLS
+        requireTLS: true,                                      // exigir cifrado
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+        tls: {
+          // En entornos Plesk internos, a veces el certificado no es de una CA pública.
+          // Con esto evitamos que nodemailer rechace la conexión por "self-signed".
+          rejectUnauthorized: false
+        }
     });
 
     const mailOptions = {
-      from: "jc.canterito@gmail.com",
+      from: `"Expodogs" <info@canterodev.es>`,
       to: email,
       subject: "Restablecimiento de contraseña en Expodogs",
       html: `
@@ -448,7 +464,7 @@ const enviarCorreoRestablecer = async (email, nombre, token) => {
             <div style="padding: 0px 20px; text-align: center;">
             <p style="text-align: left;">Hemos recibido una solicitud para restablecer tu contraseña. 
             Si no has solicitado esto, ignora este correo. Para continuar, haz clic en el siguiente enlace:</p>
-            <a href="https://tfg-expodogs.onrender.com/restablecer-password?token=${token}"
+            <a href="https://expodogs.canterodev.es/restablecer-password?token=${token}"
             style="display: inline-block; background-color: #212529; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             Restablecer contraseña
             </a>

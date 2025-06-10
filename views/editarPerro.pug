@@ -1,0 +1,41 @@
+extends layout/layout
+
+block content
+  .container.mt-5
+    h2 Editar Perro
+    form(action=`/editarPerro/${perro.id_perro}` method="POST")
+      .row
+        .col-md-6.mb-3
+          label(for="nombre") Nombre:
+          input#nombre.form-control(type="text" name="nombre" required value=perro.nombre)
+        .col-md-6.mb-3
+          label(for="raza") Raza:
+          input#raza.form-control(type="text" name="raza" required value=perro.raza)
+        .col-md-3.mb-3
+          label(for="sexo") Sexo:
+          select#sexo.form-select(name="sexo")
+            option(value="Macho" selected=perro.sexo==='Macho') Macho
+            option(value="Hembra" selected=perro.sexo==='Hembra') Hembra
+        .col-md-3.mb-3
+          label(for="libro") Libro:
+          input#libro.form-control(type="text" name="libro" value=perro.libro)
+        .col-md-3.mb-3
+          label(for="numero_libro") Nº Libro:
+          input#numero_libro.form-control(type="text" name="numero_libro" value=perro.numero_libro)
+        .col-md-3.mb-3
+          label(for="microchip") Microchip:
+          input#microchip.form-control(type="text" name="microchip" value=perro.microchip)
+        .col-md-3.mb-3
+          label(for="fecha_nacimiento") Fecha Nacimiento:
+          input#fecha_nacimiento.form-control(type="date" name="fecha_nacimiento" value=perro.fecha_nacimiento)
+        .col-md-6.mb-3
+          label(for="padre") Padre:
+          input#padre.form-control(type="text" name="padre" value=perro.padre)
+        .col-md-6.mb-3
+          label(for="madre") Madre:
+          input#madre.form-control(type="text" name="madre" value=perro.madre)
+      .text-center
+        button.btn.btn-warning.mt-3(type="submit") Actualizar Perro
+
+block asidepanel
+  include asidePanel
