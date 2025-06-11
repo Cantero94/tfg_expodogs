@@ -1,8 +1,8 @@
 # 🐾 Expodogs — Plataforma de Gestión de Exposiciones Caninas
 
-Este proyecto representa la culminación del aprendizaje adquirido a lo largo del ciclo formativo de Desarrollo de Aplicaciones Web. Sirve como antesala para el Trabajo Fin de Grado, integrando múltiples tecnologías tanto del lado del cliente como del servidor. Su propósito es ofrecer una plataforma intuitiva para la gestión de exposiciones caninas, desde el registro de usuarios hasta la inscripción y gestión de pagos.
+Este proyecto representa la culminación del aprendizaje adquirido a lo largo del ciclo formativo de Desarrollo de Aplicaciones Web. Su propósito es ofrecer una plataforma intuitiva para la gestión de exposiciones caninas, desde el registro de usuarios hasta la inscripción y gestión de pagos.
 
-🔗 [Acceder al proyecto desplegado](https://tfg-expodogs.onrender.com)
+🔗 [Acceder al proyecto desplegado](https://expodogs.canterodev.es)
 
 ---
 
@@ -15,7 +15,8 @@ Este proyecto representa la culminación del aprendizaje adquirido a lo largo de
 
 - 🐶 **Gestión de perros**:
   - Agrupados por raza y organizados con acordeón de Bootstrap
-  - Carga de una lista demo si el usuario no tiene perros registrados
+  - Añadir nuevos perros.
+  - Editar perros existentes.
 
 - 📅 **Consulta de exposiciones**:
   - Filtros avanzados: por nombre, entidad, año y paginación dinámica
@@ -36,12 +37,12 @@ Este proyecto representa la culminación del aprendizaje adquirido a lo largo de
 
 ## 🧪 Tecnologías utilizadas
 
-- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript (nativo), Pug (plantillas)
+- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript, Pug
 - **Backend**: Node.js, Express.js
 - **ORM & BBDD**: Sequelize, MySQL
 - **Email & PDF**: Nodemailer, PDFKit
 - **Autenticación & Sesión**: Express-session, bcrypt, crypto
-- **Deploy**: Render.com (Free Tier)
+- **Deploy**: Hosting Strato + Plesk
 
 ---
 
@@ -125,6 +126,8 @@ El sistema gestiona 5 entidades clave:
 │   │   ├── registerModal.pug
 │   │   └── rememberModal.pug
 │   ├── asidePanel.pug
+│   ├── crearPerro.pug
+│   ├── editarPerro.pug
 │   ├── exposiciones.pug
 │   ├── inscribirPerro.pug
 │   ├── miCuenta.pug
@@ -141,7 +144,7 @@ El sistema gestiona 5 entidades clave:
 ## 👨‍🎓 Autor
 
 **José Carlos Cantero García**  
-Este proyecto es parte del módulo de Desarrollo Web Servidor, Cliente y Diseño de Interfaces.
+Proyecto de Desarrollo de Aplicaciones Web.
 
 ---
 
