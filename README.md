@@ -42,7 +42,7 @@ Este proyecto representa la culminación del aprendizaje adquirido a lo largo de
 - **ORM & BBDD**: Sequelize, MySQL
 - **Email & PDF**: Nodemailer, PDFKit
 - **Autenticación & Sesión**: Express-session, bcrypt, crypto
-- **Deploy**: Hosting Strato + Plesk
+- **Deploy**: Hosting Strato + VPS administrado con Plesk
 
 ---
 
