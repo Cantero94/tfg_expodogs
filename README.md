@@ -136,7 +136,7 @@ El sistema gestiona 5 entidades clave:
 │   └── paginaInicio.pug
 │
 ├── index.js                  # Punto de entrada del servidor
-└── jccanterog04_expodogs.sql # Dump SQL inicial
+└── cantero1994_expodogs.sql  # Dump SQL inicial
 ```
 
 ---
