@@ -7,7 +7,7 @@ header
                 span.navbar-toggler-icon
                 #esto.container.mx-auto
             div.collapse.navbar-collapse(id="navbarNav")
-                ul.navbar-nav.w-100
+                ul.navbar-nav.w-100.flex-column.flex-sm-row.align-items-center.justify-content-between.mt-3.mt-lg-0
                     li.nav-item.ms-lg-auto
                         a.nav-link(id="nav-inicio", href="/")
                             bi.bi-house-fill
@@ -24,11 +24,11 @@ header
                         if !usuario
                             button.btn.btn-warning(data-bs-toggle="modal" data-bs-target="#loginModal") Iniciar Sesión / Registrarse
                         else
-                            .dropdown.w-25
+                            .position-relative
                                 button#dropdownMenuButton.btn.btn-warning.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
                                     bi.bi-person-fill
                                     |   Hola, #{usuario.nombre}
-                                ul.dropdown-menu.pb-0(aria-labelledby='dropdownMenuButton')
+                                ul.dropdown-menu.dropdown-menu-end.position-absolute.right-0.text-center.pb-0(aria-labelledby='dropdownMenuButton')
                                     li
                                         a.dropdown-item(href="/miCuenta")
                                             i.fas.fa-user-gear 
