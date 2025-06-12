@@ -14,11 +14,35 @@ document.addEventListener("DOMContentLoaded", () => {
   
     let allExpanded = false;
   
-    const clases = [
-      "Muy Cachorros", "Cachorros", "Jóvenes", "Campeones Jóvenes", "Intermedia",
-      "Trabajo", "Abierta", "Campeones", "Veteranos", "Campeones Veteranos"
-    ];
-  
+    const clasesConfig = {
+      "Muy Cachorros": { minMeses: 4, maxMeses: 6 },
+      "Cachorros": { minMeses: 6, maxMeses: 9 },
+      "Jóvenes": { minMeses: 9, maxMeses: 18 },
+      "Ch. Jóvenes": { minMeses: 9, maxMeses: 18 },
+      "Intermedia": { minMeses: 15, maxMeses: 24 },
+      "Trabajo": { minMeses: 15, maxMeses: null },
+      "Abierta": { minMeses: 24, maxMeses: null },
+      "Campeones": { minMeses: 15, maxMeses: null },
+      "Veteranos": { minMeses: 96, maxMeses: null },
+      "Ch. Veteranos": { minMeses: 96, maxMeses: null }
+    };
+    function calcularEdadMeses(fechaNacimiento) {
+      const hoy = new Date();
+      const nacimiento = new Date(fechaNacimiento);
+      const diffMeses = (hoy.getFullYear() - nacimiento.getFullYear()) * 12 + 
+                        (hoy.getMonth() - nacimiento.getMonth());
+      return diffMeses;
+    }
+    function getClasesDisponibles(fechaNacimiento) {
+      const edadMeses = calcularEdadMeses(fechaNacimiento);
+    return Object.entries(clasesConfig)
+      .filter(([_, config]) => {
+        return edadMeses >= config.minMeses && 
+              (config.maxMeses === null || edadMeses <= config.maxMeses);
+      })
+      .map(([clase]) => clase);
+    }
+
     select.addEventListener("change", async () => {
       const expoId = select.value;
       if (!expoId) return (container.style.display = "none");
@@ -36,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Object.entries(agrupados).forEach(([raza, perros], i) => {
         const collapseId = `collapse-${raza.replace(/\s+/g, '-')}`;
         const headingId = `heading-${raza.replace(/\s+/g, '-')}`;
-  
+          
         const perrosHTML = perros.map(p => `
           <div class="perro-item d-flex justify-content-between align-items-center my-1 py-1 border-bottom border-secondary flex-wrap">
             <div>
@@ -47,11 +71,13 @@ document.addEventListener("DOMContentLoaded", () => {
               </label>
             </div>
             <div class="d-flex align-items-center ms-auto">
-            ${p.inscrito ? `<span class="badge bg-success mx-2">Ya inscrito</span>` : ""}
+              ${p.inscrito ? `<span class="badge bg-success mx-2">Ya inscrito</span>` : ""}
               <select class="form-select form-select-sm mt-1 mt-md-0" name="clase" disabled
                 data-id="${p.id_perro}" ${p.inscrito ? "disabled" : ""}>
-                <option value="">Seleccionar clase</option>
-                ${clases.map(c => `<option ${p.clase === c ? "selected" : ""}>${c}</option>`).join("")}
+                <option value=""> -- Seleccionar clase -- </option>
+                ${getClasesDisponibles(p.fecha_nacimiento)
+                  .map(c => `<option ${p.clase === c ? "selected" : ""}>${c}</option>`)
+                  .join("")}
               </select>
             </div>
           </div>
@@ -74,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       attachEvents();
       container.style.display = "block";
     });
-  
+    
     function attachEvents() {
       const checkboxes = document.querySelectorAll('input[name="perrosSeleccionados"]');
       const selects = document.querySelectorAll('select[name="clase"]');
@@ -84,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const select = document.querySelector(`select[data-id="${cb.value}"]`);
             const row = cb.closest(".perro-item");
             select.disabled = !cb.checked;
-          
+            // Estilamos fila seleccionada
             if (cb.checked) {
               row.classList.add("bg-warning-subtle");
             } else {
