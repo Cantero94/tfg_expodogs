@@ -40,81 +40,60 @@ export const generarPDFInscripcion = async (
   // ---------- Encabezado ----------
   doc.image("public/img/logonegro.png", 50, 40, { width: 100 });
   doc.fontSize(10)
-    .text("Gestión Integral de Exposiciones S.L.", 400, 40, { align: "right" })
-    .text("CIF: B73927816", { align: "right" })
-    .text("Avenida Primero de Mayo, 24 1º", { align: "right" })
-    .text("30420, Calasparra - Murcia", { align: "right" });
+     .text("Gestión Integral de Exposiciones S.L.", 400, 40, { align: "right" })
+     .text("CIF: B73927816", { align: "right" })
+     .text("Avenida Primero de Mayo, 24 1º", { align: "right" })
+     .text("30420, Calasparra - Murcia", { align: "right" });
   doc.moveDown();
 
   doc.fontSize(16)
-    .fillColor("#000")
-    .text("FACTURA PROFORMA", 0, 120, { align: "center", bold: true });
+     .fillColor("#000")
+     .text("FACTURA PROFORMA", 0, 120, { align: "center", bold: true });
 
   const marginLeft = 60;
 
   // ---------- Datos cliente ----------
   doc.moveDown();
   doc.fontSize(11)
-    .fillColor("#000")
-    .text(`Cliente: ${usuario.nombre} ${usuario.apellidos}`, marginLeft)
-    .text(`DNI: ${usuario.dni}`, marginLeft)
-    .text(
-      `Dirección: ${usuario.direccion},`,
-      marginLeft
-    )
-    .text(
-      ` ${usuario.cp}, ${usuario.ciudad}, ${usuario.provincia}`,
-      marginLeft * 1.8
-    )
-    // Texto en dos columnas
-    leftRight(
-      `Teléfono: ${usuario.telefono1}`,
-      `Exposición: ${exposicion.nombre}`,
-      { rightBold: true }
-    );
-    leftRight(
-      `Email: ${usuario.email}`,
-      `Fecha de inscripción: ${new Date(pago.createdAt).toLocaleDateString()}`
-    );
-    // Función para alinear texto en columnas
-    function leftRight(left, right, { rightBold = false } = {}) {
-      const x = marginLeft;        // márgen izquierdo que ya usas
-      const y = doc.y;             // Y actual (no saltamos de línea)
-  
-      // --- bloque izquierdo ---
-      doc.text(left, x, y, { lineBreak: false });
-      
-      if (rightBold) doc.font('Helvetica-Bold');
-      else doc.font('Helvetica');
+     .fillColor("#000")
+     .text(`Cliente: ${usuario.nombre} ${usuario.apellidos}`, marginLeft)
+     .text(`DNI: ${usuario.dni}`, marginLeft)
+     .text(
+       `Dirección: ${usuario.direccion}, ${usuario.cp}, ${usuario.ciudad}, ${usuario.provincia}`,
+       marginLeft
+     )
+     .text(`Teléfono: ${usuario.telefono1}`, marginLeft)
+     .text(`Email: ${usuario.email}`, marginLeft);
 
-      // --- bloque derecho ---
-      doc.text(right, x, y, {
-        width: doc.page.width - x - doc.page.margins.right,
-        align: 'right',
-        lineBreak: false     // seguimos en la MISMA línea           
-      });
-
-      doc.font('Helvetica');
-    }
-    
+  // ---------- Datos inscripción ----------
   doc.moveDown();
-  doc.fontSize(12).font("Helvetica-Bold")
-    .text(`Código de Pago: ${cod_pago}`, { align: "center" });
-
+  doc.fontSize(11)
+     .text(`Exposición: ${exposicion.nombre}`, marginLeft)
+     .text(
+       `Fecha de inscripción: ${new Date(pago.createdAt).toLocaleDateString()}`,
+       marginLeft
+     );
+  if (pago.fecha_pago) {
+    doc.text(
+      `Fecha de pago: ${new Date(pago.fecha_pago).toLocaleDateString()}`,
+      marginLeft
+    );
+  }
+  doc.text(`Código de Pago: ${cod_pago}`, marginLeft);
 
   // ---------- Separador ----------
   doc.moveDown();
   doc.strokeColor("#aaaaaa")
-    .lineWidth(1)
-    .moveTo(marginLeft, doc.y)
-    .lineTo(550, doc.y)
-    .stroke();
+     .lineWidth(1)
+     .moveTo(marginLeft, doc.y)
+     .lineTo(550, doc.y)
+     .stroke();
   doc.moveDown();
 
   // ---------- Detalle perros ----------
   doc.font("Helvetica-Bold")
-    .fontSize(11)
-    .text("Detalles de inscripción:", marginLeft, doc.y, { underline: true });
+     .fontSize(11)
+     .text("Detalles de inscripción:", marginLeft, doc.y, { underline: true });
   doc.moveDown(0.5);
 
   // Agrupar perros por raza
@@ -148,21 +127,21 @@ export const generarPDFInscripcion = async (
 
     // --- Bloque ---
     doc.fontSize(10).font("Helvetica-Bold")
-      .text(`· ${p.nombre}`, marginLeft * 1.25);
+       .text(`· ${p.nombre}`, marginLeft * 1.25);
     doc.fontSize(9).font("Helvetica")
-      .text(`  Microchip: ${p.microchip}     Libro: ${p.libro}-${p.numero_libro}`,
-        marginLeft * 1.5);
+       .text(`  Microchip: ${p.microchip}     Libro: ${p.libro}-${p.numero_libro}`,
+             marginLeft * 1.5);
     doc.text(`  Clase: ${insc.clase} ${p.sexo}s`, marginLeft * 1.5);
     doc.text(`  Precio: ${insc.precio.toFixed(2)}€ (${insc.tarifa_aplicada})`,
-      marginLeft * 1.5);
+             marginLeft * 1.5);
     doc.moveDown(0.5);
   };
 
   // Mostrar perros agrupados por raza
   Object.entries(perrosPorRaza).forEach(([raza, grupo]) => {
     doc.font("Helvetica-Bold")
-      .fontSize(11)
-      .text(`Raza: ${raza}`, marginLeft);
+       .fontSize(11)
+       .text(`Raza: ${raza}`, marginLeft);
     doc.moveDown(0.3);
 
     grupo.forEach((p) => {
@@ -181,24 +160,24 @@ export const generarPDFInscripcion = async (
   // ---------- Resumen ----------
   doc.moveDown();
   doc.strokeColor("#aaaaaa")
-    .lineWidth(1)
-    .moveTo(marginLeft, doc.y)
-    .lineTo(550, doc.y)
-    .stroke();
+     .lineWidth(1)
+     .moveTo(marginLeft, doc.y)
+     .lineTo(550, doc.y)
+     .stroke();
   doc.moveDown();
 
   doc.fontSize(10).font("Helvetica-Bold")
-    .text("Resumen por tarifa:", { align: "right" });
+     .text("Resumen por tarifa:", marginLeft);
   Object.entries(subtotales).forEach(([tarifa, total]) => {
     const cantidad = inscripciones.filter(i => i.tarifa_aplicada === tarifa).length;
     doc.font("Helvetica")
-      .text(`- ${tarifa}: (x${String(cantidad).padStart(2, "0")}) ${String(total.toFixed(2)).padStart(6, "0")} €`,
-        { align: "right" });
+       .text(`- ${tarifa}: (x${cantidad}) ${total.toFixed(2)} €`,
+             marginLeft * 1.25);
   });
 
   doc.moveDown();
   doc.fontSize(12).font("Helvetica-Bold")
-    .text(`Importe total: ${pago.total}€`, { align: "right" });
+     .text(`Importe total: ${pago.total}€`, marginLeft);
   doc.moveDown();
 
   doc.fontSize(16).fillColor("#FF0000");
@@ -218,19 +197,19 @@ export const generarPDFInscripcion = async (
         doc.page.height - doc.page.margins.bottom + 20; // mismo offset que FOOTER_SPACE
 
       doc.fontSize(9)
-        .fillColor("black")
-        .text(
-          `Este documento no tiene validez fiscal. Nº: ${cod_pago}.`,
-          50,
-          bottomY,
-          { lineBreak: false }
-        )
-        .text(
-          `Página ${i - start + 1} / ${count}`,
-          doc.page.width - 100,
-          bottomY,
-          { lineBreak: false }
-        );
+         .fillColor("black")
+         .text(
+           "Este documento no tiene validez fiscal. Sirve como confirmación de inscripción.",
+           50,
+           bottomY,
+           { lineBreak: false }
+         )
+         .text(
+           `Página ${i - start + 1} / ${count}`,
+           doc.page.width - 100,
+           bottomY,
+           { lineBreak: false }
+         );
     }
     // Volvemos a la última página para terminar correctamente
     doc.switchToPage(start + count - 1);

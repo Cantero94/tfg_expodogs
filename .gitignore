@@ -1,6 +1,7 @@
 node_modules
 tmp
 logs
+public/pdf/*
 *.log
 .env
 .node-version
