@@ -1,0 +1,41 @@
+extends layout/layout
+
+block content
+  .container.mt-5
+    h2 Añadir Perro
+    form(action="/crearPerro" method="POST")
+      .row
+        .col-md-6.mb-3
+          label(for="nombre") Nombre:
+          input#nombre.form-control(type="text" name="nombre" required)
+        .col-md-6.mb-3
+          label(for="raza") Raza:
+          input#raza.form-control(type="text" name="raza" required)
+        .col-md-3.mb-3
+          label(for="sexo") Sexo:
+          select#sexo.form-select(name="sexo" required)
+            option(value="Macho") Macho
+            option(value="Hembra") Hembra
+        .col-md-3.mb-3
+          label(for="libro") Libro:
+          input#libro.form-control(type="text" name="libro" required)
+        .col-md-3.mb-3
+          label(for="numero_libro") Nº Libro:
+          input#numero_libro.form-control(type="text" name="numero_libro" required)
+        .col-md-3.mb-3
+          label(for="microchip") Microchip:
+          input#microchip.form-control(type="text" name="microchip" required)
+        .col-md-3.mb-3
+          label(for="fecha_nacimiento") Fecha Nacimiento:
+          input#fecha_nacimiento.form-control(type="date" name="fecha_nacimiento" required)
+        .col-md-6.mb-3
+          label(for="padre") Padre:
+          input#padre.form-control(type="text" name="padre")
+        .col-md-6.mb-3
+          label(for="madre") Madre:
+          input#madre.form-control(type="text" name="madre")
+      .text-center
+        button.btn.btn-success.mt-3(type="submit") Guardar Perro
+
+block asidepanel
+  include asidePanel

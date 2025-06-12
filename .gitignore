@@ -1,0 +1,6 @@
+node_modules
+tmp/*
+logs
+*.log
+.env
+.node-version

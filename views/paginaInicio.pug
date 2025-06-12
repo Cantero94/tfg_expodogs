@@ -1,0 +1,60 @@
+extends layout/layout
+block content
+    include layout/welcome
+    .container
+        h1.text-center.my-4 Próximas Exposiciones
+
+        // Mixin para una tarjeta individual
+        mixin card(exposicion)
+            .col-lg-4
+                .card.d-flex.flex-column.h-100.my-1
+                    img.card-img-top(src=(exposicion.cartel ? exposicion.cartel : 'images/placeholder.png') alt=exposicion.nombre)
+                    .card-body.text-center.d-flex.flex-column.justify-content-between.py-1
+                        div
+                            h5.my-0.card-title= exposicion.nombre
+                            p.card-text.mb-0 Fecha: #{exposicion.fecha}
+                            p.card-text.mb-0 Lugar: #{exposicion.lugar}
+                        div.mb-1
+                            if usuario
+                                a.btn.btn-warning(href=`/inscribirPerro/${exposicion.id_exposicion}`) Inscribir perro
+                            //- a.btn.btn-dark.mt-auto(href="#") Más Información
+
+        // Mixin para el carrusel de exposiciones
+        mixin carousel(exposiciones)
+            if exposiciones.length > 0
+                - var totalExpos = exposiciones.length;
+                - var grupos = Math.ceil(totalExpos / 3);
+                
+                #expoCarousel.carousel(data-bs-ride="carousel" data-bs-interval="5000")
+                    .carousel-inner
+                        each _, i in Array(grupos).fill()
+                            - var isActive = (i === 0) ? "active" : "";
+                            .carousel-item(class=isActive)
+                                .row.justify-content-center
+                                    each exposicion, j in exposiciones.slice(i * 3, (i * 3) + 3)
+                                        +card(exposicion)
+
+                    // Botón Anterior
+                    button.carousel-control-prev(type="button" data-bs-target="#expoCarousel" data-bs-slide="prev")
+                        span.carousel-control-prev-icon(aria-hidden="true")
+                        span.visually-hidden Anterior
+
+                    // Botón Siguiente
+                    button.carousel-control-next(type="button" data-bs-target="#expoCarousel" data-bs-slide="next")
+                        span.carousel-control-next-icon(aria-hidden="true")
+                        span.visually-hidden Siguiente
+            else
+                #expoCarousel.carousel
+                    .carousel-inner
+                        .carousel-item.active
+                            .row.justify-content-center
+                                .col-md-4
+                                    .card.p-3
+                                        img(src="images/placeholder.png" class="card-img-top" alt="No hay exposiciones disponibles")
+                                        .card-body.text-center
+                                            h5.card-title No hay exposiciones disponibles
+
+        +carousel(exposiciones)
+    include layout/atention
+block asidepanel
+    include asidePanel

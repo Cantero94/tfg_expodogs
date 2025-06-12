@@ -1,0 +1,62 @@
+extends layout/layout
+
+block content
+  .container.mt-xl-5
+    h1 Mis Inscripciones y Pagos
+
+    if pagos.length
+      .text-end.mb-3
+        button.btn.btn-secondary#toggleAll Expandir Todos
+
+      .accordion.bg-light#accordionPagos
+        each pago, index in pagos
+          - const expo = pago.exposicion
+          - const collapseId = `collapse-${pago.id_pago}`
+          - const headingId = `heading-${pago.id_pago}`
+          - const fecha = new Date(expo.fecha).toISOString().slice(0, 10)
+
+          .accordion-item
+            h2.accordion-header(id=headingId)
+              button.accordion-button(class=(index === 0 ? "primero" : ""), type="button", data-bs-toggle="collapse", data-bs-target=`#${collapseId}`, aria-expanded="false", aria-controls=collapseId)
+                b #{fecha} - #{expo.nombre_corto} - #{pago.cod_pago}
+                  p.mt-1 Estado de pago:
+                      span.ms-2.border.border-dark.badge(
+                        class={
+                          "bg-success": pago.estado === "pagado",
+                          "bg-warning": pago.estado === "pendiente",
+                          "bg-danger": pago.estado === "fallido"
+                        }
+                      ) #{pago.estado.toUpperCase()}
+            .accordion-collapse.collapse(class=(index === 0 ? "show" : ""), id=collapseId, aria-labelledby=headingId, data-bs-parent="#accordionPagos")
+              .accordion-body
+                if pago.agrupadas && Object.keys(pago.agrupadas).length
+                  each inscripcionesPorRaza, raza in pago.agrupadas
+                    h5.text-primary.mt-3 Raza: #{raza}
+                    ul.list-group.mb-3
+                      each insc in inscripcionesPorRaza
+                        li.list-group-item
+                          .fw-bold #{insc.perro.nombre} (#{insc.perro.sexo})
+                          .text-muted Clase: #{insc.clase} | Tarifa: #{insc.tarifa_aplicada} | Precio: #{insc.precio.toFixed(2)}€
+                else
+                  .alert.alert-info.text-center No tienes inscripciones registradas.
+                        
+                hr
+                .row.d-flex.justify-content-between.align-items-center.my-auto
+                  .col-auto.me-0.pe-0.pb-0
+                    p.fw-bold.mt-3 Total: #{pago.total.toFixed(2)}€
+                  .col-auto.d-flex.flex-wrap.gap-2.align-items-stretch.ps-0.pb-0
+                    a.btn.btn-danger.d-flex.align-items-center.px-2.py-0(href=`/generarPDF/${pago.cod_pago}`, target="_blank")
+                      i.bi.bi-filetype-pdf.me-2
+                      | Factura
+                    if pago.estado === "pendiente"
+                      div
+                        form(method="POST", action=`/pagar/${pago.cod_pago}`)
+                          button.btn.btn-success.d-flex.align-items-center.h-100.px-2.py-0(type="submit")
+                            i.bi.bi-credit-card.me-2
+                            | Pagar
+    else
+        .alert.alert-info.text-center No tienes inscripciones registradas.
+
+
+block asidepanel
+  include asidePanel

@@ -1,0 +1,103 @@
+div#registerModal.modal.fade(tabindex="-1" aria-labelledby="registroUsuarioLabel" aria-hidden="true")
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        h5#registroUsuarioLabel.modal-title Registro de Usuario
+        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Cerrar")
+      .modal-body.px-5.pb-0
+        div#registroContainer
+          form#formRegistro
+            h3 Datos de la cuenta
+            .row
+              .col-12.col-md-6
+                .mb-3
+                  label.form-label(for="email") Correo Electrónico:
+                  input.form-control(type="email" id="email" name="email" required)
+                  small#error-email.text-danger
+              .col-12.col-md-6
+                .mb-3
+                  label.form-label(for="password") Contraseña:
+                  input.form-control(type="password" id="password" name="password" required)
+                  small#error-password.text-danger
+            
+              .col-0.col-md-6
+              .col-12.col-md-6
+                .mb-3
+                  label.form-label(for="password2") Repetir Contraseña:
+                  input.form-control(type="password" id="password2" name="password2" required)
+                  small#error-password2.text-danger
+            .alert.alert-secondary.mt-3
+              small.text-muted.text-justify
+                  | Al registrarte en esta plataforma, declaras bajo tu responsabilidad que eres el propietario legal de los perros que inscribas. 
+                  | En caso de no serlo, se podrán anular los puntos que hayas obtenido y aplicar las sanciones correspondientes.
+              .my-1
+                  label
+                  input#condiciones(type="checkbox" name="condiciones" required)
+                  |  He leído y acepto estas condiciones
+            h3 Datos del propietario de la cuenta
+            fieldset#propietarioFields(disabled)
+              .row
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="nombre") Nombre:
+                          input.form-control(type="text" id="nombre" name="nombre" required)
+                          small#error-nombre.text-danger
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="apellidos") Apellidos:
+                          input.form-control(type="text" id="apellidos" name="apellidos" required)
+                          small#error-apellidos.text-danger
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="dni") DNI/NIE/PASAPORTE:
+                          input.form-control(type="text" id="dni" name="dni" placeholder="ej: 12345678Z, X1234567Y" required)
+                          small#error-dni.text-danger
+              
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="pais") País:
+                          input.form-control(type="text" id="pais" name="pais" required)
+                          small#error-pais.text-danger
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="provincia") Provincia:
+                          input.form-control(type="text" id="provincia" name="provincia" required)
+                          small#error-provincia.text-danger
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="ciudad") Ciudad:
+                          input.form-control(type="text" id="ciudad" name="ciudad" required)
+                          small#error-ciudad.text-danger
+              
+                  .col-3 
+                      .mb-3
+                          label.form-label(for="cp") CP:
+                          input.form-control(type="text" id="cp" name="cp" required)
+                          small#error-cp.text-danger
+                  .col-9
+                      .mb-3
+                          label.form-label(for="direccion") Dirección:
+                          input.form-control(type="text" id="direccion" name="direccion" required)
+                          small#error-direccion.text-danger
+              
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="telefono1") Teléfono 1:
+                          input.form-control(type="text" id="telefono1" name="telefono1" required)
+                          small#error-telefono1.text-danger
+                  .col-12.col-md-6.col-lg-4
+                      .mb-3
+                          label.form-label(for="telefono2") Teléfono 2:
+                          input.form-control(type="text" id="telefono2" name="telefono2")
+                          small#error-telefono2.text-danger
+              .alert.alert-secondary.mt-3
+                small.text-muted.text-justify
+                  | Los datos personales solicitados son necesarios para poder emitir correctamente las facturas y cumplir con la normativa legal vigente. 
+                  | En ningún caso serán compartidos con terceros y se tratarán con total confidencialidad, respetando la Ley de Protección de Datos. 
+                  br
+                  | Únicamente el nombre y apellidos del propietario aparecerán en los catálogos de las exposiciones donde inscriba a sus perros.
+
+                      
+            .modal-footer
+              button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
+              button.btn.btn-warning#registerBtn(type="submit") Registrarme

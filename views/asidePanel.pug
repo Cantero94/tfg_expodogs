@@ -1,0 +1,52 @@
+block asidepanel
+    .mt-xl-5
+        if !usuario
+                form#loginForm(action="/loginUsuario" method="POST")
+                    div(class='form-group')
+                        label(for='email') Correo Electrónico
+                        input#email.form-control(type='email' name="email" placeholder='Tu correo electrónico' required)
+                        small#emailError.text-danger
+
+                    div(class='form-group')
+                        label(for='password') Contraseña
+                        input#password.form-control(type='password' name="password" placeholder='Tu contraseña' required)
+                        small#passwordError.text-danger
+
+                    div.d-flex.justify-content-end.mt-2
+                        div.form-check.my-auto.me-3
+                            input#rememberMe.form-check-input(type="checkbox" name="remember")
+                            label.form-check-label.text-truncate(for="rememberMe") No cerrar sesión
+                        button.btn.btn-warning.text-truncate(type='submit') Iniciar Sesión
+
+
+                p(class='mt-3')
+                    a.text-dark(id="aside-remember", href="#", data-bs-toggle="modal", data-bs-target="#rememberModal") ¿Olvidaste tu contraseña? Haz clic aquí.
+                p
+                    a.text-dark(id="aside-register", href="#", data-bs-toggle="modal", data-bs-target="#registerModal") ¿No estás registrado? Regístrate aquí.
+
+        else
+            h3 Hola, #{usuario.nombre}
+            ul.list-group.my-3
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/miCuenta")
+                        i.fas.fa-user-gear 
+                        |   Mi Cuenta
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/misPerros")
+                        i.fas.fa-dog
+                        |   Mis Perros
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/inscribirPerro")
+                        i.fas.fa-file-signature
+                        |   Inscribir
+                li.list-group-item
+                    a.text-dark.text-decoration-none(href="/misInscripcionesYPagos")
+                        i.fas.fa-file-invoice-dollar
+                        |   Mis Inscripciones
+                //- li.list-group-item
+                    a.text-dark.text-decoration-none(href="/dorsales") Dorsales
+            form(action="/logout" method="POST")
+                div.d-flex.justify-content-center
+                    button.btn.btn-warning(type='submit')
+                        i.fas.fa-arrow-right-from-bracket
+                        |   Cerrar Sesión

@@ -1,0 +1,5 @@
+footer.bg-dark.text-light.py-3
+    div.container.text-center
+        p © #{year}  Expodogs. Todos los derechos reservados.
+        if hoy && hoy.toISOString().slice(0, 10) === '2025-03-24'
+            small ❄️ Fecha congelada en: #{hoy.toISOString().slice(0, 10)} ❄️

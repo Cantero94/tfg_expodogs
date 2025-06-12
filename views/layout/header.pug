@@ -1,0 +1,55 @@
+header
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+        .container 
+            a.navbar-brand.d-flex.align-items-center(href="/")
+                img(src="/img/logo.png" alt="Logo" class="img-fluid" style="max-height: 50px; width: auto;")
+            button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav", aria-controls="navbarNav", aria-expanded="false", aria-label="Toggle navigation")
+                span.navbar-toggler-icon
+                #esto.container.mx-auto
+            div.collapse.navbar-collapse(id="navbarNav")
+                ul.navbar-nav.w-100
+                    li.nav-item.ms-lg-auto
+                        a.nav-link(id="nav-inicio", href="/")
+                            bi.bi-house-fill
+                            |   Inicio
+                    li.nav-item
+                        a.nav-link(id="nav-inicio", href="/exposiciones")
+                            bi.bi-award-fill
+                            |   Exposiciones
+                    //- li.nav-item
+                        a.nav-link(id="nav-nosotros", href="/exposiciones-pasadas") Exposiciones Pasadas
+                    //- li.nav-item
+                        a.nav-link(id="nav-contacto", href="/contacto") Contacto
+                    li.nav-item.d-xxl-none
+                        if !usuario
+                            button.btn.btn-warning(data-bs-toggle="modal" data-bs-target="#loginModal") Iniciar Sesión / Registrarse
+                        else
+                            .dropdown.w-25
+                                button#dropdownMenuButton.btn.btn-warning.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                                    bi.bi-person-fill
+                                    |   Hola, #{usuario.nombre}
+                                ul.dropdown-menu.pb-0(aria-labelledby='dropdownMenuButton')
+                                    li
+                                        a.dropdown-item(href="/miCuenta")
+                                            i.fas.fa-user-gear 
+                                            |   Mi Cuenta
+                                    li
+                                        a.dropdown-item(href="/misPerros")
+                                            i.fas.fa-dog
+                                            |   Mis Perros
+                                    li
+                                        a.dropdown-item(href="/inscribirPerro")
+                                            i.fas.fa-file-signature
+                                            |   Inscribir
+                                    li
+                                        a.dropdown-item(href="/misInscripcionesYPagos")
+                                            i.fas.fa-file-invoice-dollar
+                                            |   Mis Inscripciones
+                                    //- li
+                                        a.dropdown-item(href="/dorsales") Dorsales
+                                    div.mt-1.w-100.mb-0
+                                        form.mb-0(action="/logout" method="POST")
+                                            button.btn.btn-warning.w-100.mb-0(type='submit')
+                                                i.fas.fa-arrow-right-from-bracket
+                                                |   Cerrar Sesión
+                    

@@ -1,0 +1,37 @@
+extends layout/layout
+
+block content
+  .container.mt-5
+    h1 Mis Perros
+    if Object.keys(perrosPorRaza).length
+      .text-end.mb-2
+        button.btn.btn-secondary#toggleAll Expandir Todas
+
+      .accordion.bg-light#accordionPerros
+        each raza, index in Object.keys(perrosPorRaza)
+          - var perros = perrosPorRaza[raza] // Obtener los perros de esta raza
+
+          .accordion-item
+            h2.accordion-header(id=`heading-${raza.replace(/\s+/g, '-')}`)
+              button.accordion-button(class=(index === 0 ? "primero" : ""), type="button" data-bs-toggle="collapse" data-bs-target=`#collapse-${raza.replace(/\s+/g, '-')}` aria-expanded=(index === 0 ? "true" : "false") aria-controls=`collapse-${raza.replace(/\s+/g, '-')}`)
+                b Raza: #{raza}
+
+            .accordion-collapse.collapse(class=(index === 0 ? "show" : "") id=`collapse-${raza.replace(/\s+/g, '-')}` aria-labelledby=`heading-${raza.replace(/\s+/g, '-')}` data-bs-parent="#accordionPerros")
+              .accordion-body
+                each perro in perros
+                  .perro-item.d-flex.justify-content-between.align-items-center.my-1.border-bottom
+                    span.perro-nombre 
+                     b #{perro.nombre} 
+                     |  (#{perro.libro}-#{perro.numero_libro}) (#{perro.microchip})
+                    a.btn.btn-warning.btn-sm(href=`/editarPerro/${perro.id_perro}`) Editar
+
+    else
+      .alert.alert-info.text-center No tienes perros registrados.
+
+
+    .text-center.mt-4
+      a.btn.btn-success(href="/crearPerro") Añadir Perro
+        //- a.btn.btn-success.disabled(href="/agregarPerro") Añadir Perro
+
+block asidepanel
+    include asidePanel

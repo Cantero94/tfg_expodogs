@@ -1,0 +1,92 @@
+extends layout/layout
+
+block content
+  .container.mt-xl-3
+    h1.text-center Exposiciones
+
+    // Barra de búsqueda y filtros
+    .row.mb-3
+      .col-md-3.my-1.px-1
+        input.fs-7.form-control#nameSearch(type="text" placeholder="Buscar exposiciones por nombre")
+
+      .col-md-3.my-1.px-1
+        select.fs-7.form-select#organizerFilter
+          option(value="") Entidad Organizadora
+          each entidad in entidadesUnicas
+            option(value=entidad)= entidad
+
+      .col-3.col-md-auto.my-1.px-1
+        input.fs-7.form-control#filterYear(type="number" placeholder="Año" min="2017" max="2050")
+
+      .col-2.col-md-auto.my-1.px-1
+        select.fs-7.form-select#itemsPerPage
+          option(value="5") 5
+          option(value="10") 10
+          option(value="20") 20
+          option(value="50") 50
+          option(value="100") 100
+
+      .col-2.d-flex.gap-2.my-1.px-1
+        button.fs-7.btn.btn-dark#clearFilters
+          i.fas.fa-filter-circle-xmark
+        //- button.fs-7.btn.btn-warning.w-100.text-nowrap#searchButton Buscar
+
+    // Tabla de exposiciones
+    .table-responsive
+      table.table.table-striped.table-hover
+        thead
+          tr
+            th Cartel
+            th Nombre
+            th Tipo
+            th Ámbito
+            th Fecha
+            th Fin del 1º Plazo
+            th Entidad Organizadora
+
+        tbody#expoTableBody
+          each exposicion in exposiciones
+            tr
+              td 
+                img(src=exposicion.cartel alt="Cartel" style="width: 80px; height: 113.16px;")
+              td= exposicion.nombre
+              td.text-capitalize= exposicion.tipo
+              td.text-capitalize= exposicion.ambito
+              td.text-nowrap= moment(exposicion.fecha).format("DD-MM-YYYY")
+              td.text-nowrap= moment(exposicion.plazo1_fin).format("DD-MM-YYYY HH:mm")
+              td= exposicion.entidad_organizadora
+              
+          // Agregar filas vacías si hay menos registros que el límite
+          - const emptyRows = limit - exposiciones.length;
+          each _ in [...Array(emptyRows).keys()]
+            tr
+              td &nbsp;
+              td &nbsp;
+              td &nbsp;
+              td &nbsp;
+              td &nbsp;
+              td &nbsp;
+              td &nbsp;
+
+    // Paginación
+    .pagination.justify-content-center.mt-4
+      if totalPages > 1
+        nav
+          ul.pagination
+            li.page-item(class=(currentPage === 1 ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=1&limit=${limit}`) <<
+
+            li.page-item(class=(currentPage === 1 ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=${currentPage - 1}&limit=${limit}`) <
+
+            li.page-item
+              span.page-link.text-dark #{currentPage} / #{totalPages}
+
+            li.page-item(class=(currentPage === totalPages ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=${currentPage + 1}&limit=${limit}`) >
+
+            li.page-item(class=(currentPage === totalPages ? "disabled" : ""))
+              a.page-link(href=`/exposiciones?page=${totalPages}&limit=${limit}`) >>
+
+block asidepanel
+    include asidePanel
