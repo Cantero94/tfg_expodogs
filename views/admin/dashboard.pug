@@ -1,0 +1,71 @@
+extends ./layout
+
+block contenido
+    .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pt-3.pb-2.mb-3.border-bottom
+        h1.h2 #{pagina}
+        .btn-toolbar.mb-2.mb-md-0
+            .btn-group.me-2
+                button.btn.btn-sm.btn-outline-secondary Compartir
+                button.btn.btn-sm.btn-outline-secondary Exportar
+            button.btn.btn-sm.btn-outline-secondary.dropdown-toggle
+                span(data-feather="calendar")
+                | Esta semana
+
+    .row
+        .col-md-3
+            .card.text-white.bg-primary.mb-3.card-premium
+                .card-header Usuarios
+                .card-body
+                    h5.card-title 152
+                    p.card-text Usuarios registrados
+        .col-md-3
+            .card.text-white.bg-success.mb-3.card-premium
+                .card-header Perros
+                .card-body
+                    h5.card-title 89
+                    p.card-text Perros inscritos
+        .col-md-3
+            .card.text-white.bg-warning.mb-3.card-premium
+                .card-header Exposiciones
+                .card-body
+                    h5.card-title 4
+                    p.card-text Activas próximamente
+        .col-md-3
+            .card.text-white.bg-danger.mb-3.card-premium
+                .card-header Pagos
+                .card-body
+                    h5.card-title 12
+                    p.card-text Pendientes de revisión
+
+    h2.mt-4 Últimas Inscripciones
+    .table-responsive
+        table.table.table-striped.table-sm
+            thead
+                tr
+                    th #
+                    th Usuario
+                    th Perro
+                    th Exposición
+                    th Estado
+            tbody
+                tr
+                    td 1,001
+                    td Juan Perez
+                    td Bobby
+                    td Expo Madrid
+                    td 
+                        span.badge.bg-success Pagado
+                tr
+                    td 1,002
+                    td Maria Lopez
+                    td Tobi
+                    td Expo Valencia
+                    td 
+                        span.badge.bg-warning Pendiente
+                tr
+                    td 1,003
+                    td Carlos Ruiz
+                    td Rocky
+                    td Expo Madrid
+                    td 
+                        span.badge.bg-success Pagado

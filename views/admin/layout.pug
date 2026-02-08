@@ -1,0 +1,130 @@
+doctype html
+html(lang="es")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Admin Panel - #{pagina}
+        // Bootstrap 5 CDN
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet")
+        // Google Fonts (Premium feel)
+        link(href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet")
+        // Icons
+        link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css")
+        
+        style.
+            body {
+                font-family: 'Outfit', sans-serif;
+                background-color: #f8f9fa;
+            }
+            .sidebar {
+                min-height: 100vh;
+                background: linear-gradient(180deg, #212529 0%, #343a40 100%);
+                color: white;
+            }
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                padding: 0.8rem 1rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: all 0.2s;
+            }
+            .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                color: #fff;
+                background-color: rgba(255,255,255,0.1);
+                border-radius: 5px;
+            }
+            .sidebar .nav-link i {
+                font-size: 1.2rem;
+            }
+            .main-content {
+                padding: 2rem;
+            }
+            .card-premium {
+                border: none;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                transition: transform 0.2s;
+            }
+            .card-premium:hover {
+                transform: translateY(-5px);
+            }
+            .section-title {
+                font-weight: 600;
+                color: #adb5bd;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-top: 1.5rem;
+                margin-bottom: 0.5rem;
+                padding-left: 1rem;
+            }
+
+    body
+        .container-fluid
+            .row
+                // Sidebar
+                nav.col-md-3.col-lg-2.d-md-block.sidebar.collapse#sidebarMenu
+                    div.position-sticky.pt-3
+                        div.text-center.mb-4
+                            h4.text-white.fw-bold ExpoDogs
+                            span.badge.bg-warning.text-dark Admin Panel
+                        
+                        ul.nav.flex-column
+                            li.nav-item
+                                a.nav-link(href="/admin" class=(pagina === 'Panel de Control' ? 'active' : '')) 
+                                    i.bi.bi-speedometer2
+                                    | Dashboard
+
+                            div.section-title Configuración y Datos
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-sliders
+                                    | Configuración
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-newspaper
+                                    | Noticias
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-trophy
+                                    | Exposiciones                           
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-tag
+                                    | Precios x Defecto
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-people
+                                    | Usuarios
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-envelope
+                                    | Bandeja de Salida (0)
+
+                            div.section-title Listas de Datos
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-file-earmark-text
+                                    | Tipos de Documentos
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-journal-bookmark
+                                    | Tipos de Libros
+                            li.nav-item
+                                a.nav-link(href="#") 
+                                    i.bi.bi-award
+                                    | Títulos de Perros
+
+                        div.mt-auto.pt-5.pb-3.px-3
+                             a.btn.btn-outline-danger.w-100(href="/") 
+                                i.bi.bi-box-arrow-left.me-2
+                                | Volver a la Web
+
+                // Main Content
+                main.col-md-9.ms-sm-auto.col-lg-10.px-md-4.main-content
+                    block contenido
+
+        // Bootstrap JS
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js")

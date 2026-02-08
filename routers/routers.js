@@ -14,14 +14,14 @@ import {
     actualizarCuenta,
     misPerros,
     vistaCrearPerro,
-    crearPerro, 
-    mostrarPerro, 
+    crearPerro,
+    mostrarPerro,
     editarPerro
 } from "../controllers/userController.js";
 
 import {
-    vistaInscribirPerro, 
-    obtenerPerrosParaInscripcion, 
+    vistaInscribirPerro,
+    obtenerPerrosParaInscripcion,
     inscribirPerros,
     misInscripcionesYPagos,
     generarPDF,
@@ -32,7 +32,20 @@ import {
     vistaExposiciones,
 } from "../controllers/expoController.js";
 
+import {
+    panelControl
+} from "../controllers/adminController.js";
+
+import { restringirIP } from '../middleware/security.js';
+
+
+
 const router = express.Router();
+
+// Esto protegerá TODAS las rutas que definas debajo
+router.use('/admin', restringirIP);
+// router.get('/admin/login', ...); // Solo accesible desde Tailscale
+router.get("/admin", panelControl);
 
 router.get("/", paginaInicio);
 router.post("/registrarUsuario", registrarUsuario);

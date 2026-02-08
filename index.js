@@ -7,6 +7,9 @@ import "./models/relaciones.js";
 
 const app = express();
 
+// Confiar en el proxy inverso (Nginx/Apache) para obtener la IP real
+app.set('trust proxy', 1);
+
 app.use(session({
     secret: process.env.SESSION_SECRET || "expodogs-secret",
     resave: false,
@@ -15,7 +18,7 @@ app.use(session({
 }));
 
 db.authenticate()
-    .then(()=> console.log(`🧮  Conectado a la base de datos`))
+    .then(() => console.log(`🧮  Conectado a la base de datos`))
     .catch(err => console.log(err));
 
 app.set('view engine', 'pug');
@@ -41,4 +44,4 @@ app.use(express.static('public'));
 app.use('/', router);
 
 const port = process.env.PORT || 4000;
-app.listen(port, () => {console.log(`🚀 Servidor corriendo en el puerto: https://expodogs.canterodev.es:${port}`)});
+app.listen(port, () => { console.log(`🚀 Servidor corriendo en el puerto: https://expodogs.canterodev.es:${port}`) });
